@@ -56,18 +56,18 @@ number,question,a,b,c,d,e,f,g,h,i,j,answers,ref,explanation
 
 ### number
 
-* Sử dụng số thứ tự tăng dần (bắt đầu từ 1).
+* Sử dụng số thứ tự tăng dần (bắt đầu từ 1) nối với tên của file input.
 * Phải unique cho mỗi record.
 * Tăng dần theo thứ tự record.
 
 Ví dụ:
 
 ```text
-1
-2
-3
+1-CAM20-TEST1-PASSAGE1
+2-CAM20-TEST1-PASSAGE1
+3-CAM20-TEST1-PASSAGE1
 ...
-100
+100-CAM20-TEST1-PASSAGE1
 ```
 
 ---
@@ -159,7 +159,7 @@ e,f,g,h,i,j
 Ví dụ:
 
 ```csv
-1,"Question","Option A","Option B","Option C","Option D","","","","","",""
+1-CAM20-TEST1-PASSAGE1,"Question","Option A","Option B","Option C","Option D","","","","","",""
 ```
 
 * Chỉ có duy nhất một đáp án đúng.
@@ -283,7 +283,7 @@ C2
 
 Trước khi ghi file:
 
-* [ ] number là số thứ tự tăng dần (1, 2, 3, ...).
+* [ ] number là số thứ tự tăng dần (1, 2, 3, ...) nối với tên file input.
 * [ ] question đúng format HTML.
 * [ ] Mỗi từ cần đầy đủ Type 1 và Type 2.
 * [ ] Có đúng 4 đáp án từ a-d.
