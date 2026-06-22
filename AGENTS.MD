@@ -2,7 +2,7 @@
 
 ## Objective
 
-Chuyển đổi danh sách từ vựng IELTS từ `input.txt` thành file CSV `output.csv` theo đúng định dạng để import vào hệ thống học từ vựng.
+Chuyển đổi danh sách từ vựng IELTS từ các file input ở thư mục`/input` thành file CSV lưu ở thư mục `/output` theo đúng định dạng để import vào hệ thống học từ vựng.
 
 ---
 
@@ -11,17 +11,17 @@ Chuyển đổi danh sách từ vựng IELTS từ `input.txt` thành file CSV `o
 ```text
 .
 ├── AGENTS.md
-├── input.txt
-└── output.csv
+├── /input
+└── /output
 ```
 
 ### AGENTS.md
 
 Tài liệu mô tả quy tắc hoạt động của Agent.
 
-### input.txt
+### /input
 
-Chứa danh sách từ vựng đầu vào và nghĩa tiếng Việt.
+Chứa danh sách từ vựng đầu vào và nghĩa tiếng Việt nếu có.
 
 Ví dụ:
 
@@ -38,7 +38,7 @@ Mỗi dòng là một từ hoặc cụm từ cần được chuyển đổi thà
 
 ### output.csv
 
-File CSV đầu ra chứa tất cả các câu hỏi trắc nghiệm từ `input.txt`.
+Thư mục chứa các file CSV đầu ra chứa tất cả các câu hỏi trắc nghiệm từ `/input`.
 
 ---
 
@@ -263,19 +263,19 @@ C2
 * Tất cả nội dung HTML phải được minify.
 * Chỉ sử dụng 4 đáp án (a-d).
 * Các cột e-j luôn để trống.
-* Mỗi từ vựng ở danh sách `input.txt` phải đầy đủ Type 1 và Type 2.
+* Mỗi từ vựng ở danh sách `/input` phải đầy đủ Type 1 và Type 2.
 
 ---
 
 ## Workflow
 
-1. Đọc danh sách từ trong `input.txt`.
+1. Đọc danh sách từ trong thư mục `/input`.
 2. Tra cứu nghĩa và định nghĩa chuẩn.
 3. Sinh câu hỏi cho mỗi từ phải đủ Type 1 và Type 2.
 4. Sinh 4 đáp án lựa chọn (a-d).
 5. Xác định cột đáp án đúng.
 6. Sinh phần explanation đầy đủ.
-7. Ghi kết quả vào file `output.csv`.
+7. Ghi kết quả vào file ở `/output`.
 
 ---
 
