@@ -50,8 +50,7 @@ tasked with = to be assigned, responsible for, charged with
 experiment = test, trial, study
 in charge of = having control or responsibility for #subordinate
 operation = management, procedures, work
-terrified of = to be scared of, afraid of, very
-worried about #confident about, unafraid of
+terrified of = to be scared of, afraid of, very worried about #confident about, unafraid of
 horse racing = a sport in which horses with riders race against each other
 hit = to bring a bat, etc. against a ball and push it away with force #miss, strikeout
 defense = fielding, preventing runs, stopping hits
