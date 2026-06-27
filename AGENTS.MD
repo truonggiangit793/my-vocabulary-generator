@@ -347,10 +347,10 @@ Ví dụ:
 Yêu cầu:
 
 - Câu ví dụ phải tự nhiên và phù hợp ngữ cảnh IELTS.
-- Dùng `__` để biểu thị chỗ trống.
+- Mỗi `__` chỉ đại diện cho **1 từ**.
+- Với cụm từ có nhiều từ, dùng số lượng `__` tương ứng với số từ trong cụm. Ví dụ `home range` → `__ __`, `account for` → `__ __`.
 - Câu phải có đủ ngữ cảnh để suy ra một đáp án hợp lý.
 - Không để lộ từ đích hoặc biến thể quá rõ của từ đích trong câu hỏi.
-- Với cụm từ nhiều từ, một blank `__` đại diện cho toàn bộ cụm từ.
 - Không tạo câu quá chung khiến nhiều đáp án khác nhau đều đúng.
 
 ### 6.3 `answers`
