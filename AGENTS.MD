@@ -310,10 +310,10 @@ Dùng cùng format trong mục `7. Explanation Format`.
 
 ## 6. Fill The Blank Format
 
-Mỗi record Fill The Blank phải có đúng 4 cột theo thứ tự:
+Mỗi record Fill The Blank phải có đúng 5 cột theo thứ tự:
 
 ```csv
-number,question,answers,explanation
+number,question,answers,explanation,hint
 ```
 
 ### 6.1 `number`
@@ -374,6 +374,15 @@ kākāpō
 
 Dùng cùng format trong mục `7. Explanation Format`.
 
+### 6.5 `hint`
+
+Giá trị của cột này là English definition của từ vựng tương ứng, dùng làm gợi ý cho người học.
+
+Quy tắc:
+
+- Giống với nội dung `p.definition` trong cột `explanation`.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
+
 ---
 
 ## 7. Explanation Format
@@ -429,7 +438,7 @@ Ví dụ input có 40 từ hợp lệ:
 ### Fill The Blank Row
 
 ```csv
-81-CAM20-TEST1-PASSAGE1,"<div><b>Complete the sentence by typing correct words:</b><p>Many animals that hunt after sunset are __.</p></div>",nocturnal,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>"
+81-CAM20-TEST1-PASSAGE1,"<div><b>Complete the sentence by typing correct words:</b><p>Many animals that hunt after sunset are __.</p></div>",nocturnal,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>","Active at night rather than during the day."
 ```
 
 ---
@@ -440,7 +449,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 
 - Mỗi file output có đúng tên tương ứng với input.
 - Choice Question có đúng 15 cột mỗi dòng.
-- Fill The Blank có đúng 4 cột mỗi dòng.
+- Fill The Blank có đúng 5 cột mỗi dòng.
 - Các cột `e` đến `j` trong Choice Question đều trống.
 - `answers` của Choice Question chỉ là `a`, `b`, `c`, hoặc `d`.
 - `ref` trong Choice Question luôn trống.
