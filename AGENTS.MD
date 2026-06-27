@@ -1,242 +1,146 @@
 # IELTS Vocabulary CSV Generator Agent
 
-## Directory Structure
+Tài liệu này là đặc tả bắt buộc cho Agent khi chuyển đổi danh sách từ vựng trong `/input` thành hai loại bài tập CSV:
+
+- Choice Question: câu hỏi trắc nghiệm, lưu trong `/choice-question`.
+- Fill The Blank: câu hỏi điền từ, lưu trong `/fill-the-blank`.
+
+Agent phải ưu tiên độ chính xác ngữ nghĩa, tính nhất quán định dạng CSV, và khả năng import dữ liệu ổn định vào hệ thống học từ vựng.
+
+---
+
+## 1. Directory Structure
 
 ```text
 .
 ├── AGENTS.MD
-├── /input
-├── /choice-question
-└── /fill-the-blank
+├── input/
+├── choice-question/
+└── fill-the-blank/
 ```
 
-### AGENTS.MD
+### `AGENTS.MD`
 
-Tài liệu mô tả quy tắc hoạt động của Agent, các format input và output.
+Chứa quy tắc hoạt động, định dạng input, định dạng output, và checklist kiểm tra chất lượng.
 
-### Folder /input
+### `input/`
 
-Chứa danh sách từ vựng đầu vào.
+Chứa các file `.txt` đầu vào. Mỗi file tương ứng với một passage/test và sẽ tạo ra các file CSV cùng tên trong thư mục output.
 
-Ví dụ:
+Ví dụ file:
 
 ```text
-nocturnal = night‑active, after‑dark, nighttime
+nocturnal = night-active, after-dark, nighttime
 critically = dangerously, seriously, severely
 endangered = highly threatened, on the brink of extinction, scarce
 unique = unusual, uncommon, distinctive
+forward-facing = facing ahead, oriented to the front #backward-facing
 ```
 
-Mỗi dòng là một từ hoặc cụm từ cần được chuyển đổi thành các câu hỏi tương ứng theo yêu cầu.
+Quy tắc đọc mỗi dòng:
 
-### Folder /choice-question
+- Mỗi dòng hợp lệ có dạng `word = meaning/synonyms`.
+- Phần bên trái dấu `=` là từ hoặc cụm từ đích.
+- Phần bên phải là gợi ý nghĩa, định nghĩa, từ đồng nghĩa, hoặc cụm giải thích.
+- Nếu có ký tự `#`, phần sau `#` là gợi ý từ trái nghĩa hoặc distractor cần tránh/ưu tiên theo ngữ cảnh.
+- Bỏ qua dòng trống.
+- Giữ nguyên chính tả đặc biệt của từ gốc nếu có, ví dụ `kākāpō`, `forest-dwelling`.
+- Nếu một từ lặp lại trong cùng file input, chỉ tạo một bộ câu hỏi cho lần xuất hiện đầu tiên, trừ khi ngữ nghĩa khác rõ ràng.
 
-Thư mục chứa các file CSV đầu ra là các câu hỏi dạng trắc nghiệm.
+### `choice-question/`
 
-### Folder /fill-the-blank
+Chứa CSV đầu ra cho câu hỏi trắc nghiệm.
 
-Thư mục chứa các file CSV đầu ra là các câu hỏi dạng điền vào chỗ trống.
-
----
-
-## CSV Format
-
-### Choice Question
-
-Mỗi file CSV của dạng "Choice Question" phải tuân thủ chính xác thứ tự cột sau:
-
-```csv
-number,question,a,b,c,d,e,f,g,h,i,j,answers,ref,explanation
-```
-
-Trong đó, nội dung các cột phải tuân thủ quy tắc dưới đây:
-
-#### number
-
-* Sử dụng số thứ tự tăng dần (bắt đầu từ 1) nối với tên của file input.
-* Phải unique cho mỗi record.
-* Tăng dần theo thứ tự record.
-
-Ví dụ:
+Tên file output phải trùng stem với input:
 
 ```text
-1-CAM20-TEST1-PASSAGE1
-2-CAM20-TEST1-PASSAGE1
-3-CAM20-TEST1-PASSAGE1
-...
-100-CAM20-TEST1-PASSAGE1
+input/CAM20-TEST1-PASSAGE1.txt
+choice-question/CAM20-TEST1-PASSAGE1.csv
 ```
 
-#### question
+### `fill-the-blank/`
 
-Agent phải hỗ trợ 2 loại câu hỏi cho dạng Choice Question này:
+Chứa CSV đầu ra cho câu hỏi điền từ.
 
-##### Type 1 - Definition => Vocabulary
+Tên file output phải trùng stem với input:
 
-Format:
-
-```html
-<div>
-  <b>Question description:</b>
-  <p>Question details.</p>
-</div>
-```
-
-Ví dụ:
-
-```html
-<div>
-  <b>Choose the word that matches the definition:</b>
-  <p>A historical person known for documenting and exploring ancient sites.</p>
-</div>
-```
-
-Definition nên được lấy từ:
-
-1. Cambridge Dictionary (ưu tiên).
-2. Oxford Dictionary.
-3. Hoặc tự paraphrase theo nghĩa chuẩn nếu không tìm được định nghĩa phù hợp.
-
-Yêu cầu:
-
-* Viết hoa chữ cái đầu.
-* Ngắn gọn, dễ hiểu.
-* Chỉ có một đáp án đúng.
-* Agent phải tạo đủ dữ liệu cho cả Type 1 và Type 2.
-
-##### Type 2 - Vietnamese Meaning => Vocabulary
-
-Format:
-
-```html
-<div>
-  <b>Choose the English word that matches the meaning:</b>
-  <p>Nghĩa tiếng Việt.</p>
-</div>
-```
-
-Ví dụ:
-
-```html
-<div>
-  <b>Choose the English word that matches the meaning:</b>
-  <p>Rời bỏ.</p>
-</div>
-```
-
-Yêu cầu:
-
-* Nghĩa tiếng Việt phải ngắn gọn.
-* Chỉ có một đáp án đúng.
-* Agent phải tạo đủ dữ liệu cho cả Type 1 và Type 2.
-
-#### Các cột từ "a" tới "j"
-
-Quy tắc:
-
-* Chỉ sử dụng các cột: a, b, c, d.
-* Chỉ có 4 đáp án lựa chọn cho mỗi câu hỏi.
-* Các cột còn lại (e, f, g, h, i, j) phải để trống:
-
-Ví dụ:
-
-```csv
-1-CAM20-TEST1-PASSAGE1,"Question","Option A","Option B","Option C","Option D","","","","","",""
-```
-
-* Chỉ có duy nhất một đáp án đúng.
-* Các đáp án nhiễu phải cùng loại từ (noun, verb, adjective, adverb...) nếu có thể.
-* Ưu tiên các từ có liên quan về chủ đề hoặc ngữ nghĩa.
-
-#### answers
-
-Là tên cột chứa đáp án đúng của các cột lựa chọn (a, b, c, d). Không ghi từ vựng vào cột này.
-
-
-#### ref
-
-Luôn để trống cột này.
-
-### Fill The Blank
-
-Mỗi file CSV của dạng "Fill The Blank" phải tuân thủ chính xác thứ tự cột sau:
-
-```csv
-number,question,answers,explanation
-```
-
-Trong đó, nội dung các cột phải tuân thủ quy tắc dưới đây:
-
-#### number
-
-Định dạng cột này tương tự như cột number ở dạng "Choice Question", thứ tự sẽ được tiếp tục từ Choice Question.
-
-#### question
-
-Tạo dạng câu hỏi cho bài tập điền từ. Format tương tự cột question thuộc dạng "Choice Question".
-
-Ví dụ:
-
-```html
-<div>
-  <b>Complete the sentence by typing correct words:</b>
-  <p>My name __ John.</p>
-</div>
-```
-
-#### answer
-
-Đây là cột chứa thông tin câu trả lời chính xác, chuyển đổi thành dạng lowercase.
-
----
-
-## Explanation Format Requirement
-
-Bắt buộc sử dụng HTML.
-
-Format:
-
-```html
-<div>
-  <h3 class="word">...</h3>
-  <p class="type">...</p>
-  <div class="ipa">
-    <div class="ipa-uk"><b>UK</b><p>...</p></div>
-    <div class="ipa-us"><b>US</b><p>...</p></div>
-  </div>
-  <p class="cerf">...</p>
-  <p class="definition">...</p>
-  <p class="vietnamese">...</p>
-</div>
-```
-
-Ví dụ:
-
-```html
-<div>
-  <h3 class="word">Abandon</h3>
-  <p class="type">verb</p>
-  <div class="ipa">
-    <div class="ipa-uk"><b>UK</b><p>/əˈbæn.dən/</p></div>
-    <div class="ipa-us"><b>US</b><p>/əˈbæn.dən/</p></div>
-  </div>
-  <p class="cerf">B2</p>
-  <p class="definition">To leave a place, thing, or person, usually for ever.</p>
-  <p class="vietnamese">Từ bỏ, rời bỏ hoặc bỏ rơi một nơi chốn, sự việc, hay con người, thường là vĩnh viễn.</p>
-</div>
+```text
+input/CAM20-TEST1-PASSAGE1.txt
+fill-the-blank/CAM20-TEST1-PASSAGE1.csv
 ```
 
 ---
 
-## Vocabulary Metadata Rules
+## 2. General Generation Workflow
+
+Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
+
+1. Đọc toàn bộ từ vựng trong file input.
+2. Chuẩn hóa danh sách từ:
+   - Loại dòng trống.
+   - Tách `word`, `meaning/synonyms`, và optional note sau `#`.
+   - Xác định loại từ chính: noun, verb, adjective, adverb, phrase, phrasal verb, idiom.
+3. Thu thập metadata cho từng từ:
+   - Word display.
+   - Part of speech.
+   - IPA UK và IPA US.
+   - CEFR.
+   - English definition.
+   - Vietnamese meaning.
+4. Tạo Choice Question:
+   - Mỗi từ tạo đúng 2 câu: Type 1 và Type 2.
+5. Tạo Fill The Blank:
+   - Mỗi từ tạo ít nhất 1 câu điền từ.
+6. Đánh số liên tục:
+   - Choice Question bắt đầu từ `1`.
+   - Fill The Blank tiếp tục sau số cuối cùng của Choice Question.
+7. Xuất CSV đúng số cột, đúng thứ tự cột, không thêm cột ngoài quy định.
+8. Kiểm tra lại CSV trước khi hoàn tất.
+
+---
+
+## 3. Vocabulary Metadata Rules
+
+### Source Priority
+
+Khi xác định định nghĩa, IPA, và loại từ, ưu tiên nguồn theo thứ tự:
+
+1. Cambridge Dictionary.
+2. Oxford Learner's Dictionaries.
+3. Merriam-Webster hoặc nguồn từ điển uy tín khác.
+4. Tự paraphrase theo nghĩa chuẩn nếu không tìm được nguồn phù hợp.
+
+### English Definition
+
+Yêu cầu:
+
+- Ngắn gọn, tự nhiên, dễ hiểu.
+- Viết hoa chữ cái đầu.
+- Phù hợp đúng nghĩa của từ trong input.
+- Không dùng chính từ đích trong definition nếu có thể tránh.
+- Chỉ diễn đạt một nghĩa chính để tránh nhiều đáp án đúng.
+
+### Vietnamese Meaning
+
+Yêu cầu:
+
+- Ngắn gọn, tự nhiên, đúng ngữ cảnh IELTS.
+- Có thể là cụm danh từ, cụm động từ, hoặc câu giải thích ngắn.
+- Không quá dài nếu dùng trong câu hỏi Type 2.
+- Chỉ diễn đạt một nghĩa chính để tránh nhiều đáp án đúng.
 
 ### IPA
 
-Sử dụng IPA chuẩn quốc tế (tham khảo từ điển Cambridge).
+Yêu cầu:
+
+- Sử dụng IPA chuẩn quốc tế.
+- Ưu tiên Cambridge cho UK/US IPA.
+- Nếu UK và US giống nhau, vẫn điền cả hai ô.
+- Nếu không tìm được IPA đáng tin cậy cho tên riêng/thuật ngữ hiếm, tự ước lượng cẩn thận và giữ nhất quán.
 
 ### CEFR
 
-Được đánh dấu dựa theo các loại sau:
+Giá trị hợp lệ:
 
 ```text
 A1
@@ -246,3 +150,302 @@ B2
 C1
 C2
 ```
+
+Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tương đối:
+
+- A1-A2: từ phổ thông, cơ bản.
+- B1-B2: từ học thuật hoặc thường gặp trong IELTS.
+- C1-C2: từ chuyên biệt, hiếm, hoặc học thuật nâng cao.
+
+---
+
+## 4. CSV Rules
+
+### General CSV Requirements
+
+- File CSV không bắt buộc có header. Nếu tạo mới theo bộ dữ liệu hiện tại, không thêm header để nhất quán với các file đang có.
+- Mỗi record nằm trên một dòng CSV hợp lệ.
+- Dùng dấu phẩy `,` làm delimiter.
+- Nội dung HTML nên được đặt trong dấu ngoặc kép `"..."`.
+- Nếu trong field có dấu ngoặc kép, escape bằng cách nhân đôi `""`.
+- Không để thừa hoặc thiếu cột.
+- Không thêm Markdown trong CSV.
+- Không dùng line break bên trong một field CSV.
+- Encoding: UTF-8.
+
+---
+
+## 5. Choice Question Format
+
+Mỗi record Choice Question phải có đúng 15 cột theo thứ tự:
+
+```csv
+number,question,a,b,c,d,e,f,g,h,i,j,answers,ref,explanation
+```
+
+### 5.1 `number`
+
+Định dạng:
+
+```text
+{index}-{INPUT_FILE_STEM}
+```
+
+Ví dụ:
+
+```text
+1-CAM20-TEST1-PASSAGE1
+2-CAM20-TEST1-PASSAGE1
+3-CAM20-TEST1-PASSAGE1
+```
+
+Quy tắc:
+
+- Bắt đầu từ `1` cho mỗi file input.
+- Tăng dần theo thứ tự record.
+- Unique trong cùng file CSV.
+- `INPUT_FILE_STEM` là tên file input không bao gồm `.txt`.
+
+### 5.2 `question`
+
+Agent phải tạo đủ 2 loại câu hỏi cho mỗi từ.
+
+#### Type 1: Definition => Vocabulary
+
+Format HTML:
+
+```html
+<div><b>Choose the word that matches the definition:</b><p>Definition.</p></div>
+```
+
+Ví dụ:
+
+```html
+<div><b>Choose the word that matches the definition:</b><p>Active at night rather than during the day.</p></div>
+```
+
+Yêu cầu:
+
+- Definition viết bằng tiếng Anh.
+- Viết hoa chữ cái đầu.
+- Ngắn gọn, chính xác.
+- Chỉ có một đáp án đúng trong 4 lựa chọn.
+
+#### Type 2: Vietnamese Meaning => Vocabulary
+
+Format HTML:
+
+```html
+<div><b>Choose the English word that matches the meaning:</b><p>Nghĩa tiếng Việt.</p></div>
+```
+
+Ví dụ:
+
+```html
+<div><b>Choose the English word that matches the meaning:</b><p>Hoạt động về đêm.</p></div>
+```
+
+Yêu cầu:
+
+- Nghĩa tiếng Việt ngắn gọn.
+- Chỉ có một đáp án đúng trong 4 lựa chọn.
+- Không viết kèm từ tiếng Anh trong phần nghĩa tiếng Việt, trừ tên riêng hoặc thuật ngữ bắt buộc.
+
+### 5.3 Columns `a` to `j`
+
+Quy tắc:
+
+- Chỉ sử dụng `a`, `b`, `c`, `d` cho 4 lựa chọn.
+- Các cột `e`, `f`, `g`, `h`, `i`, `j` luôn để trống.
+- Có đúng một đáp án đúng.
+- Đáp án đúng phải là chính xác từ/cụm từ đích trong input.
+- Các distractor nên cùng loại từ với đáp án đúng nếu có thể.
+- Ưu tiên distractor cùng chủ đề, cùng ngữ cảnh IELTS, hoặc gần nghĩa nhưng không đồng nghĩa hoàn toàn.
+- Không chọn distractor khiến câu hỏi có nhiều hơn một đáp án đúng.
+- Không dùng biến thể hình thái quá gần làm nhiễu nếu dễ gây mơ hồ, ví dụ đáp án là `criticise` thì tránh `critical` nếu câu hỏi không kiểm tra word family.
+
+### 5.4 `answers`
+
+Giá trị hợp lệ:
+
+```text
+a
+b
+c
+d
+```
+
+Quy tắc:
+
+- Chỉ ghi tên cột chứa đáp án đúng.
+- Không ghi nội dung từ vựng vào cột này.
+
+### 5.5 `ref`
+
+Luôn để trống.
+
+### 5.6 `explanation`
+
+Dùng cùng format trong mục `7. Explanation Format`.
+
+---
+
+## 6. Fill The Blank Format
+
+Mỗi record Fill The Blank phải có đúng 4 cột theo thứ tự:
+
+```csv
+number,question,answers,explanation
+```
+
+### 6.1 `number`
+
+Định dạng giống Choice Question:
+
+```text
+{index}-{INPUT_FILE_STEM}
+```
+
+Quy tắc:
+
+- Không bắt đầu lại từ `1`.
+- Tiếp tục từ số cuối cùng của Choice Question trong cùng input.
+- Ví dụ nếu Choice Question có 80 câu, Fill The Blank bắt đầu từ `81-{INPUT_FILE_STEM}`.
+
+### 6.2 `question`
+
+Format HTML:
+
+```html
+<div><b>Complete the sentence by typing correct words:</b><p>Sentence with __ blank.</p></div>
+```
+
+Ví dụ:
+
+```html
+<div><b>Complete the sentence by typing correct words:</b><p>Many desert animals are __ and become active after sunset.</p></div>
+```
+
+Yêu cầu:
+
+- Câu ví dụ phải tự nhiên và phù hợp ngữ cảnh IELTS.
+- Dùng `__` để biểu thị chỗ trống.
+- Câu phải có đủ ngữ cảnh để suy ra một đáp án hợp lý.
+- Không để lộ từ đích hoặc biến thể quá rõ của từ đích trong câu hỏi.
+- Với cụm từ nhiều từ, một blank `__` đại diện cho toàn bộ cụm từ.
+- Không tạo câu quá chung khiến nhiều đáp án khác nhau đều đúng.
+
+### 6.3 `answers`
+
+Quy tắc:
+
+- Ghi đáp án đúng ở dạng lowercase.
+- Giữ dấu gạch nối, khoảng trắng, và ký tự đặc biệt nếu thuộc từ gốc.
+- Với cụm từ, ghi đầy đủ cụm từ.
+
+Ví dụ:
+
+```text
+nocturnal
+home range
+forest-dwelling
+kākāpō
+```
+
+### 6.4 `explanation`
+
+Dùng cùng format trong mục `7. Explanation Format`.
+
+---
+
+## 7. Explanation Format
+
+Bắt buộc sử dụng HTML đúng cấu trúc sau:
+
+```html
+<div><h3 class="word">Word</h3><p class="type">part of speech</p><div class="ipa"><div class="ipa-uk"><b>UK</b><p>/.../</p></div><div class="ipa-us"><b>US</b><p>/.../</p></div></div><p class="cerf">B2</p><p class="definition">Definition.</p><p class="vietnamese">Vietnamese meaning.</p></div>
+```
+
+Ví dụ:
+
+```html
+<div><h3 class="word">Abandon</h3><p class="type">verb</p><div class="ipa"><div class="ipa-uk"><b>UK</b><p>/əˈbæn.dən/</p></div><div class="ipa-us"><b>US</b><p>/əˈbæn.dən/</p></div></div><p class="cerf">B2</p><p class="definition">To leave a place, thing, or person, usually for ever.</p><p class="vietnamese">Từ bỏ, rời bỏ hoặc bỏ rơi một nơi chốn, sự việc, hay con người, thường là vĩnh viễn.</p></div>
+```
+
+Yêu cầu:
+
+- Giữ nguyên class `cerf` để tương thích với dữ liệu hiện tại, dù nội dung là CEFR.
+- `h3.word`: viết hoa chữ cái đầu khi phù hợp, nhưng giữ nguyên tên riêng/ký tự đặc biệt.
+- `p.type`: dùng lowercase, ví dụ `noun`, `verb`, `adjective`, `adverb`, `phrase`.
+- `p.definition`: định nghĩa tiếng Anh ngắn gọn.
+- `p.vietnamese`: nghĩa tiếng Việt tự nhiên.
+- Không thêm tag ngoài cấu trúc trên nếu không cần thiết.
+- Không xuống dòng trong field CSV chứa HTML.
+
+---
+
+## 8. Question Count Rules
+
+Với mỗi từ hợp lệ trong input:
+
+- Tạo 2 Choice Questions:
+  - 1 câu Type 1: Definition => Vocabulary.
+  - 1 câu Type 2: Vietnamese Meaning => Vocabulary.
+- Tạo ít nhất 1 Fill The Blank question.
+
+Ví dụ input có 40 từ hợp lệ:
+
+- Choice Question: 80 records.
+- Fill The Blank: ít nhất 40 records, bắt đầu từ `81-{INPUT_FILE_STEM}`.
+
+---
+
+## 9. Output Example
+
+### Choice Question Row
+
+```csv
+1-CAM20-TEST1-PASSAGE1,"<div><b>Choose the word that matches the definition:</b><p>Active at night rather than during the day.</p></div>",solitary,plentiful,nocturnal,unattended,,,,,,,c,,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>"
+```
+
+### Fill The Blank Row
+
+```csv
+81-CAM20-TEST1-PASSAGE1,"<div><b>Complete the sentence by typing correct words:</b><p>Many animals that hunt after sunset are __.</p></div>",nocturnal,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>"
+```
+
+---
+
+## 10. Quality Checklist
+
+Trước khi kết thúc, Agent phải kiểm tra:
+
+- Mỗi file output có đúng tên tương ứng với input.
+- Choice Question có đúng 15 cột mỗi dòng.
+- Fill The Blank có đúng 4 cột mỗi dòng.
+- Các cột `e` đến `j` trong Choice Question đều trống.
+- `answers` của Choice Question chỉ là `a`, `b`, `c`, hoặc `d`.
+- `ref` trong Choice Question luôn trống.
+- `answers` của Fill The Blank là lowercase.
+- Số thứ tự tăng dần và không trùng.
+- Fill The Blank tiếp tục số thứ tự sau Choice Question.
+- Mỗi từ có đủ Type 1 và Type 2 trong Choice Question.
+- Mỗi câu hỏi chỉ có một đáp án đúng.
+- Distractor không trùng đáp án đúng và không gây nhập nhằng.
+- HTML trong `question` và `explanation` hợp lệ.
+- CSV được escape đúng với dấu ngoặc kép trong HTML.
+- Không có dòng rỗng ngoài ý muốn ở cuối file nếu hệ thống import không yêu cầu.
+
+---
+
+## 11. Common Mistakes To Avoid
+
+- Không ghi đáp án đúng dạng từ vựng vào cột `answers` của Choice Question.
+- Không dùng nhiều hơn 4 lựa chọn.
+- Không điền dữ liệu vào cột `e` đến `j`.
+- Không để definition quá rộng khiến nhiều lựa chọn đều đúng.
+- Không dùng distractor khác loại từ nếu có lựa chọn tốt hơn.
+- Không bỏ qua IPA UK/US.
+- Không đổi class `cerf` thành `cefr` khi đang theo format dữ liệu hiện tại.
+- Không thêm header vào CSV mới nếu muốn nhất quán với các file hiện có.
+- Không dùng xuống dòng trong HTML field của CSV.
