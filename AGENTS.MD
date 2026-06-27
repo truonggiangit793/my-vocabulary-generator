@@ -1,60 +1,57 @@
 # IELTS Vocabulary CSV Generator Agent
 
-## Objective
-
-Chuyển đổi danh sách từ vựng IELTS từ các file input ở thư mục`/input` thành file CSV lưu ở thư mục `/output` theo đúng định dạng để import vào hệ thống học từ vựng.
-
----
-
 ## Directory Structure
 
 ```text
 .
-├── AGENTS.md
+├── AGENTS.MD
 ├── /input
-└── /output
+├── /choice-question
+└── /fill-the-blank
 ```
 
-### AGENTS.md
+### AGENTS.MD
 
-Tài liệu mô tả quy tắc hoạt động của Agent.
+Tài liệu mô tả quy tắc hoạt động của Agent, các format input và output.
 
-### /input
+### Folder /input
 
-Chứa danh sách từ vựng đầu vào và nghĩa tiếng Việt nếu có.
+Chứa danh sách từ vựng đầu vào.
 
 Ví dụ:
 
 ```text
-abandon	rời bỏ
-absorb	thấm hút, tiếp thu
-abundant	dồi dào, phong phú
-accomplishment	thành tựu
-acknowledge	thừa nhận
-acquire	đạt được
+nocturnal = night‑active, after‑dark, nighttime
+critically = dangerously, seriously, severely
+endangered = highly threatened, on the brink of extinction, scarce
+unique = unusual, uncommon, distinctive
 ```
 
-Mỗi dòng là một từ hoặc cụm từ cần được chuyển đổi thành các câu hỏi trắc nghiệm.
+Mỗi dòng là một từ hoặc cụm từ cần được chuyển đổi thành các câu hỏi tương ứng theo yêu cầu.
 
-### output.csv
+### Folder /choice-question
 
-Thư mục chứa các file CSV đầu ra chứa tất cả các câu hỏi trắc nghiệm từ `/input`.
+Thư mục chứa các file CSV đầu ra là các câu hỏi dạng trắc nghiệm.
+
+### Folder /fill-the-blank
+
+Thư mục chứa các file CSV đầu ra là các câu hỏi dạng điền vào chỗ trống.
 
 ---
 
 ## CSV Format
 
-Mỗi file CSV phải tuân thủ chính xác thứ tự cột sau:
+### Choice Question
+
+Mỗi file CSV của dạng "Choice Question" phải tuân thủ chính xác thứ tự cột sau:
 
 ```csv
 number,question,a,b,c,d,e,f,g,h,i,j,answers,ref,explanation
 ```
 
----
+Trong đó, nội dung các cột phải tuân thủ quy tắc dưới đây:
 
-## Column Rules
-
-### number
+#### number
 
 * Sử dụng số thứ tự tăng dần (bắt đầu từ 1) nối với tên của file input.
 * Phải unique cho mỗi record.
@@ -70,13 +67,11 @@ Ví dụ:
 100-CAM20-TEST1-PASSAGE1
 ```
 
----
+#### question
 
-### question
+Agent phải hỗ trợ 2 loại câu hỏi cho dạng Choice Question này:
 
-Agent phải hỗ trợ 2 loại câu hỏi.
-
-#### Type 1 - Definition → Vocabulary
+##### Type 1 - Definition => Vocabulary
 
 Format:
 
@@ -98,9 +93,9 @@ Ví dụ:
 
 Definition nên được lấy từ:
 
-1. Cambridge Dictionary (ưu tiên)
-2. Oxford Dictionary
-3. Hoặc tự paraphrase theo nghĩa chuẩn nếu không tìm được định nghĩa phù hợp
+1. Cambridge Dictionary (ưu tiên).
+2. Oxford Dictionary.
+3. Hoặc tự paraphrase theo nghĩa chuẩn nếu không tìm được định nghĩa phù hợp.
 
 Yêu cầu:
 
@@ -109,7 +104,7 @@ Yêu cầu:
 * Chỉ có một đáp án đúng.
 * Agent phải tạo đủ dữ liệu cho cả Type 1 và Type 2.
 
-#### Type 2 - Vietnamese Meaning → Vocabulary
+##### Type 2 - Vietnamese Meaning => Vocabulary
 
 Format:
 
@@ -135,26 +130,13 @@ Yêu cầu:
 * Chỉ có một đáp án đúng.
 * Agent phải tạo đủ dữ liệu cho cả Type 1 và Type 2.
 
----
-
-### a → j
+#### Các cột từ "a" tới "j"
 
 Quy tắc:
 
-* Chỉ sử dụng các cột:
-
-  * a
-  * b
-  * c
-  * d
-
+* Chỉ sử dụng các cột: a, b, c, d.
 * Chỉ có 4 đáp án lựa chọn cho mỗi câu hỏi.
-
-* Các cột còn lại phải để trống:
-
-```csv
-e,f,g,h,i,j
-```
+* Các cột còn lại (e, f, g, h, i, j) phải để trống:
 
 Ví dụ:
 
@@ -166,38 +148,49 @@ Ví dụ:
 * Các đáp án nhiễu phải cùng loại từ (noun, verb, adjective, adverb...) nếu có thể.
 * Ưu tiên các từ có liên quan về chủ đề hoặc ngữ nghĩa.
 
----
+#### answers
 
-### answers
+Là tên cột chứa đáp án đúng của các cột lựa chọn (a, b, c, d). Không ghi từ vựng vào cột này.
 
-Là tên cột chứa đáp án đúng.
 
-Ví dụ:
+#### ref
 
-```text
-a
-b
-c
-d
-```
+Luôn để trống cột này.
 
-Không ghi từ vựng vào cột này.
+### Fill The Blank
 
----
-
-### ref
-
-Luôn để trống.
-
-Ví dụ:
+Mỗi file CSV của dạng "Fill The Blank" phải tuân thủ chính xác thứ tự cột sau:
 
 ```csv
-""
+number,question,answers,explanation
 ```
+
+Trong đó, nội dung các cột phải tuân thủ quy tắc dưới đây:
+
+#### number
+
+Định dạng cột này tương tự như cột number ở dạng "Choice Question", thứ tự sẽ được tiếp tục từ Choice Question.
+
+#### question
+
+Tạo dạng câu hỏi cho bài tập điền từ. Format tương tự cột question thuộc dạng "Choice Question".
+
+Ví dụ:
+
+```html
+<div>
+  <b>Complete the sentence by typing correct words:</b>
+  <p>My name __ John.</p>
+</div>
+```
+
+#### answer
+
+Đây là cột chứa thông tin câu trả lời chính xác, chuyển đổi thành dạng lowercase.
 
 ---
 
-### explanation
+## Explanation Format Requirement
 
 Bắt buộc sử dụng HTML.
 
@@ -239,11 +232,11 @@ Ví dụ:
 
 ### IPA
 
-* Sử dụng IPA chuẩn quốc tế.
+Sử dụng IPA chuẩn quốc tế (tham khảo từ điển Cambridge).
 
 ### CEFR
 
-Chỉ sử dụng một mức duy nhất:
+Được đánh dấu dựa theo các loại sau:
 
 ```text
 A1
@@ -253,44 +246,3 @@ B2
 C1
 C2
 ```
-
----
-
-## Output Requirements
-
-* Không chứa header CSV.
-* Không có dòng trống giữa các record.
-* Tất cả nội dung HTML phải được minify.
-* Chỉ sử dụng 4 đáp án (a-d).
-* Các cột e-j luôn để trống.
-* Mỗi từ vựng ở danh sách `/input` phải đầy đủ Type 1 và Type 2.
-
----
-
-## Workflow
-
-1. Đọc danh sách từ trong thư mục `/input`.
-2. Tra cứu nghĩa và định nghĩa chuẩn.
-3. Sinh câu hỏi cho mỗi từ phải đủ Type 1 và Type 2.
-4. Sinh 4 đáp án lựa chọn (a-d).
-5. Xác định cột đáp án đúng.
-6. Sinh phần explanation đầy đủ.
-7. Ghi kết quả vào file ở `/output`.
-
----
-
-## Quality Checklist
-
-Trước khi ghi file:
-
-* [ ] number là số thứ tự tăng dần (1, 2, 3, ...) nối với tên file input.
-* [ ] question đúng format HTML.
-* [ ] Mỗi từ cần đầy đủ Type 1 và Type 2.
-* [ ] Có đúng 4 đáp án từ a-d.
-* [ ] e-j để trống.
-* [ ] Chỉ có một đáp án đúng.
-* [ ] answers chứa tên cột đúng.
-* [ ] ref để trống.
-* [ ] explanation phải đúng format.
-* [ ] Không có header CSV.
-* [ ] Không có dòng trống giữa các record.
