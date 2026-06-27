@@ -26,7 +26,7 @@ ignore = pay no attention to, disregard, overlook
 embrace = accept, welcome, take up #reject
 pattern = model, style, way
 emerge = appear, occur, come out #vanish
-hyper-vigilant = excessively cautious, extremely alert, highly watchful #inattentive, oblivious (hyper-= over; vig-= to stay awake)
+hyper-vigilant = excessively cautious, extremely alert, highly watchful #inattentive, oblivious
 in response = as a reaction, as a result
 judge = evaluate, assess, rate #ignore
 panel = a group of people with skills or specialist knowledge who have been chosen to give advice or opinions on a particular subject
@@ -49,7 +49,7 @@ feed = post, update, content
 uplifting = inspiring, encouraging, positive
 complaint = grievance, criticism, objection
 queue = waiting line, row
-in turn = as a result, consequently, subsequently (turn= to rotate)
+in turn = as a result, consequently, subsequently
 constantly = continually, repeatedly, all the time
 tackle = deal with, address, handle
 demanding = difficult, tough, challenging #easy

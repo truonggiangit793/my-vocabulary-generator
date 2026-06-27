@@ -64,8 +64,7 @@ landlocked = surrounded by land, no sea, no ocean
 favour = like more, prefer #dislike
 calm = peaceful, still, gentle
 shallow = not deep, low, surface-level #deep
-endangered = in big danger, at risk of
-disappearing, dying out #safe
+endangered = in big danger, at risk of disappearing, dying out #safe
 heightened = increased, greater, higher
 extinction = death of a species
 vulnerable = at risk, unprotected, susceptible

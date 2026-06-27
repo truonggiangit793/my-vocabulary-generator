@@ -5,22 +5,21 @@ endangered = highly threatened, on the brink of extinction, scarce
 unique = unusual, uncommon, distinctive
 pale = light (in color), faint, blanched
 forest‑dwelling = living in or habitually found in forests
-owl-like= looking like an owl (-like =similar to)
+owl-like= looking like an owl
 feather = the soft, light covering of a bird’s body
-forward-facing = facing ahead, oriented to the front, front-directed #backward-facing (fore- = front, before)
+forward-facing = facing ahead, oriented to the front, front-directed #backward-facing
 predominantly = mainly, primarily, chiefly #rarely
 beak = the hard, pointed mouthpart of a bird
 relatively = somewhat, comparatively, fairly
 lifespan = lifetime, years of life, life cycle
-solitary = single, alone, individual #together, sociable, gregarious (sol= alone)
+solitary = single, alone, individual #together, sociable, gregarious
 occupy = live in, inhabit, reside in
 home range = the area in which an animal lives and moves
 forage = go searching, especially for food
 leap = jump, bound, bounce
 flap = wave, tap
-descent = fall, drop, decline #ascent (de-= down)
-vegetarian = someone who does not eat meat,
-fish, or poultry #carnivorous
+descent = fall, drop, decline #ascent
+vegetarian = someone who does not eat meat, fish, or poultry #carnivorous
 bark = the tough outer covering of a tree
 bulb = the round underground part of some plants, which stores food and from which the plant grows
 fern frond = the large, divided leave of a fern plant
@@ -33,18 +32,18 @@ nest = a structure built by birds or insects to leave their eggs in to develop
 incubate = hatch, brood, nurture #abandon
 unattended = unguarded, neglected, unsupervised #attended
 vulnerable = susceptible, at risk, prone
-predator = an animal that hunt and eat other animals (pred-= hunt)
+predator = an animal that hunt and eat other animals
 arrival = appearance, coming, emergence
 settler = colonist, immigrant, pioneer
 prey = hunted animal, target, quarry #predator
 feather = the soft, light covering of a bird’s body
 cloak = a warm piece of clothing like a coat without
 sleeves that hangs loosely from your shoulders
-coloniser = a person who establish control over and settle in new territories (col-= inhabit)
-be confined to = restricted, limited, enclosed, constrained #free (fin-=limit, boundary)
+coloniser = a person who establish control over and settle in new territories
+be confined to = restricted, limited, enclosed, constrained #free
 accelerate = quicken, speed up, hasten #slow
-colonisation = establishment (of control over a place), settlement, occupation #independence (col-= together)
-habitat = the natural environment where a species lives and grows (habit-= to live, dwell)
+colonisation = establishment (of control over a place), settlement, occupation #independence
+habitat = the natural environment where a species lives and grows
 deplete = to reduce the amount of something that is present or available #replenish
 stoat = a small, thin animal that has brown fur in summer and white fur in winter, known for preying on birds
 launch = start, initiate, commence #end
@@ -54,24 +53,24 @@ predator‑free = safe from predators
 practically = virtually, almost, nearly #theoretically
 cling to life = remain to live, survive, persist
 isolated = remote, solitary, secluded #connected
-form = establish, create, set up #dissolve (form-=shape, structure)
-expedition = a long and carefully organized
-journey, especially to a dangerous or unfamiliar place (ped-= foot)
-captivity = confinement, imprisonment, detention #freedom (cap-= take, seize)
-initiative = plan, scheme, project (init-= beginning)
+form = establish, create, set up #dissolve
+expedition = a long and carefully organized journey, especially to a dangerous or unfamiliar place
+captivity = confinement, imprisonment, detention #freedom
+initiative = plan, scheme, project
 spot = detect, notice, sight #miss
 ferret = a small, yellowish-white animal with a long thin body, bred for hunting rabbits and other small animals
 weasel = a small, slender mammal with reddish-brown fur and a long body that can kill other small animals such as mice and birds for food
 subsequent = occurring or coming later or after #preceding
 predation = hunting, preying, pursuit #protection
 feral = wild, undomesticated, untamed #domesticated
-rapid = fast, quick, swift #gradual (rap-= to seize, hurry)
-evacuate = relocate, transfer, transport #stay (vac=empty)
+rapid = fast, quick, swift #gradual
+evacuate = relocate, transfer, transport #stay
 sanctuary= (or refuge) - an area for birds or animals where they are protected
 breeding = reproducing, spawning, propagating #sterility
 insufficient = lacking, inadequate, deficient #sufficient
-offset = balance, compensate for, make up for mortality = death rate, fatality, loss of life #survival (mort-= death)
-prompt = encourage, stimulate, trigger #deter (prom-= to bring forward)
+offset = balance, compensate for, make up for 
+mortality = death rate, fatality, loss of life #survival
+prompt = encourage, stimulate, trigger #deter
 launch = start, initiate, commence #end
 specialist = expert, authority, professional #amateur
 renew = refresh, regenerate #stagnant
@@ -92,5 +91,4 @@ minimise = reduce, lessen, diminish #maximize
 maintain = preserve, sustain, uphold #stop
 sufficient = enough, adequate, ample #scarce
 accommodate = contain, have room for, shelter #reject, exclude
-stakeholder = an individual or a group with an
-interest in or influence over a specific project or issue
+stakeholder = an individual or a group with an interest in or influence over a specific project or issue

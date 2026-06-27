@@ -5,7 +5,7 @@ remarkably = amazingly, surprisingly, outstanding
 (be) independent from = be not influenced by,be free from, be separate from #be dependent on
 shift = change, switch, vary #keep, stay unchanged
 stay true (to something) = stick to, remain faithful to, be loyal to #abandon, drift away from
-vision = idea, picture, perspective (vis-= to see)
+vision = idea, picture, perspective
 abstract = not real, not clear, vague
 exceptionally = extremely, remarkably, extraordinarily #typically
 keen = highly developed, sharp, acute #imperceptive
@@ -71,7 +71,7 @@ weathered = worn, eroded, aged #new, unspoiled
 jagged = uneven, rough, rugged #smooth, even
 edge = border, margin, boundary
 irregular = inconsistent, unpredictable, erratic #regular
-variation = difference, change, alteration #slight similarity (var-= different, changing)
+variation = difference, change, alteration #slight similarity
 contrast = difference, distinction, disparity #likeness
 convex = curved or swelling outward, like the exterior of a sphere or circle #concave
 concave = curved inward, like the inside of a bowl #convex

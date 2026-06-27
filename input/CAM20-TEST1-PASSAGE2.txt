@@ -1,10 +1,9 @@
-reintroduce = bring back, restore, reinstate #eradicate (re-= again)
+reintroduce = bring back, restore, reinstate #eradicate
 elm = type of large tree that loses its broad leaves in winter, or the wood from this tree
 account for = make up, represent, constitute
 in the aftermath of = after something bad has happened, as a result of #prior to
-dominant = more important, strong, or
-noticeable than anything else of the same type
-countryside = rural area #city (side= region, area)
+dominant = more important, strong, or noticeable than anything else of the same type
+countryside = rural area #city
 start from a very low base = begin from a very small amount/level, start from scratch
 impact = effect, influence, repercussion
 significant = important, essential, meaningful
@@ -24,7 +23,7 @@ reach = attain, approach, pass #recede
 diameter = the distance from one side to the opposite side of a circle, measured by a line passing through the center of the circle
 trunk = the thick central woody stem of a tree
 take hold = begin to have a strong effect
-mature= fully grown, adult, fully developed
+mature = fully grown, adult, fully developed
 identify = pinpoint, determine, detect #overlook
 specimen = a single example of something, especially an animal or a plant
 mysteriously = strangely, puzzlingly, enigmatically #clearly, obviously
@@ -35,7 +34,7 @@ tolerance = endurance, resistance, acceptance
 resistance = the ability to fight against something harmful
 down to luck = dependent on chance or fortune, due to luck
 run a close second to = be nearly as important as, was just behind
-prominent = noticeable, obvious, important #obscure (min-= stand out)
+prominent = noticeable, obvious, important #obscure
 component = element, part, constituent
 birch = a tree with smooth bark (=outer covering) and thin branches, or the wood from this tree
 Bronze Age = the historical period characterized by the use of bronze tools and weapons
@@ -52,9 +51,9 @@ determined = resolute, steadfast, unwavering #indecisive
 precarious = risky, insecure, perilous #secure
 march in = enter forcefully, come in aggressively, invade
 right on our doorstep = very close, nearby, imminent
-prospect = chance, possibility, likelihood #impossibility ˈ
+prospect = chance, possibility, likelihood #impossibility
 resistant = invulnerable, hardy, impervious
-tolerant = resistant, able to withstand, enduring #susceptible (tol-= to bear, endure)
+tolerant = resistant, able to withstand, enduring #susceptible
 hybrid = combined, mixed, crossbred #purebred
 strain = variety, type, variant
 seedling = a young plant grown from seed and not yet mature
@@ -62,12 +61,12 @@ breed = raise, grow, nurture
 withstand = endure, survive, bear #succumb
 slit = a long straight narrow cut or hole
 inject = put in, shoot in, insert #remove, extract
-pathogen = disease-causing organism (path= disease)
+pathogen = disease-causing organism
 susceptible = vulnerable, prone, inclined, predisposed #resistant
 bother = concern, worry, perturb #indifferent
 host = provide for, support, sustain #exclude
-wary = cautious, guarded, vigilant #reckless (war-= cautious, aware)
-on the face of = at first glance, seemingly, apparently (fac-= form, appearance)
+wary = cautious, guarded, vigilant #reckless
+on the face of = at first glance, seemingly, apparently
 replace = putting in place of, substitute, displace #retain
 horticultural = relating to the science or art of growing plants
 analogue = something that is similar to or can be used instead of something else
