@@ -259,10 +259,28 @@ Quy tắc:
 - Các cột `e`, `f`, `g`, `h`, `i`, `j` luôn để trống.
 - Có đúng một đáp án đúng.
 - Đáp án đúng phải là chính xác từ/cụm từ đích trong input.
-- Các distractor nên cùng loại từ với đáp án đúng nếu có thể.
-- Ưu tiên distractor cùng chủ đề, cùng ngữ cảnh IELTS, hoặc gần nghĩa nhưng không đồng nghĩa hoàn toàn.
+- Các distractor phải là đáp án gây nhiễu hợp lý, không phải các từ khác biệt quá nổi bật khiến người học dễ loại bằng cảm tính.
+- Distractor nên cùng loại từ với đáp án đúng nếu có thể.
+- Distractor nên có độ dài, hình thức, mức độ học thuật, và độ khó tương đối gần với đáp án đúng.
+- Ưu tiên distractor cùng chủ đề, cùng ngữ cảnh IELTS, hoặc gần trường nghĩa nhưng không đồng nghĩa hoàn toàn.
+- Với Type 1, distractor cần đủ gần nghĩa để buộc người học hiểu definition, nhưng vẫn sai rõ khi xét chính xác định nghĩa.
+- Với Type 2, distractor cần đủ gần nghĩa tiếng Việt hoặc cùng nhóm chủ đề, nhưng không được là bản dịch đúng của câu hỏi.
+- Nếu input có gợi ý sau `#`, có thể dùng làm distractor khi đó là từ trái nghĩa hoặc lựa chọn dễ nhầm phù hợp.
 - Không chọn distractor khiến câu hỏi có nhiều hơn một đáp án đúng.
 - Không dùng biến thể hình thái quá gần làm nhiễu nếu dễ gây mơ hồ, ví dụ đáp án là `criticise` thì tránh `critical` nếu câu hỏi không kiểm tra word family.
+- Không dùng distractor quá lạc chủ đề, quá dễ nhận ra, hoặc khác loại từ rõ ràng, ví dụ đáp án là adjective nhưng distractor là noun/verb không liên quan.
+
+Ví dụ distractor tốt:
+
+```text
+nocturnal, solitary, vulnerable, unattended
+```
+
+Ví dụ distractor kém:
+
+```text
+nocturnal, computer, happiness, run
+```
 
 ### 5.4 `answers`
 
