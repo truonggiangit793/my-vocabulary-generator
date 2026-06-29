@@ -212,16 +212,16 @@ Agent phải tạo đủ 2 loại câu hỏi cho mỗi từ.
 
 #### Type 1: Definition => Vocabulary
 
-Format HTML:
+Format:
 
-```html
-<div><b>Choose the word that matches the definition:</b><p>Definition.</p></div>
+```text
+Definition.
 ```
 
 Ví dụ:
 
-```html
-<div><b>Choose the word that matches the definition:</b><p>Active at night rather than during the day.</p></div>
+```text
+Active at night rather than during the day.
 ```
 
 Yêu cầu:
@@ -233,16 +233,16 @@ Yêu cầu:
 
 #### Type 2: Vietnamese Meaning => Vocabulary
 
-Format HTML:
+Format:
 
-```html
-<div><b>Choose the English word that matches the meaning:</b><p>Nghĩa tiếng Việt.</p></div>
+```text
+Nghĩa tiếng Việt.
 ```
 
 Ví dụ:
 
-```html
-<div><b>Choose the English word that matches the meaning:</b><p>Hoạt động về đêm.</p></div>
+```text
+Hoạt động về đêm.
 ```
 
 Yêu cầu:
@@ -332,16 +332,16 @@ Quy tắc:
 
 ### 6.2 `question`
 
-Format HTML:
+Format:
 
-```html
-<div><b>Complete the sentence by typing correct words:</b><p>Sentence with __ blank.</p></div>
+```text
+Sentence with __ blank.
 ```
 
 Ví dụ:
 
-```html
-<div><b>Complete the sentence by typing correct words:</b><p>Many desert animals are __ and become active after sunset.</p></div>
+```text
+Many desert animals are __ and become active after sunset.
 ```
 
 Yêu cầu:
@@ -432,13 +432,13 @@ Ví dụ input có 40 từ hợp lệ:
 ### Choice Question Row
 
 ```csv
-1-CAM20-TEST1-PASSAGE1,"<div><b>Choose the word that matches the definition:</b><p>Active at night rather than during the day.</p></div>",solitary,plentiful,nocturnal,unattended,,,,,,,c,,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>"
+1-CAM20-TEST1-PASSAGE1,"Active at night rather than during the day.",solitary,plentiful,nocturnal,unattended,,,,,,,c,,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>"
 ```
 
 ### Fill The Blank Row
 
 ```csv
-81-CAM20-TEST1-PASSAGE1,"<div><b>Complete the sentence by typing correct words:</b><p>Many animals that hunt after sunset are __.</p></div>",nocturnal,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>","Active at night rather than during the day."
+81-CAM20-TEST1-PASSAGE1,"Many animals that hunt after sunset are __.",nocturnal,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>","Active at night rather than during the day."
 ```
 
 ---
@@ -459,7 +459,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Mỗi từ có đủ Type 1 và Type 2 trong Choice Question.
 - Mỗi câu hỏi chỉ có một đáp án đúng.
 - Distractor không trùng đáp án đúng và không gây nhập nhằng.
-- HTML trong `question` và `explanation` hợp lệ.
+- HTML trong `explanation` hợp lệ.
 - CSV được escape đúng với dấu ngoặc kép trong HTML.
 - Không có dòng rỗng ngoài ý muốn ở cuối file nếu hệ thống import không yêu cầu.
 
