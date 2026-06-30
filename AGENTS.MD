@@ -166,7 +166,7 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 - File CSV không bắt buộc có header. Nếu tạo mới theo bộ dữ liệu hiện tại, không thêm header để nhất quán với các file đang có.
 - Mỗi record nằm trên một dòng CSV hợp lệ.
 - Dùng dấu phẩy `,` làm delimiter.
-- Nội dung HTML nên được đặt trong dấu ngoặc kép `"..."`.
+- Nội dung chứa dấu phẩy hoặc dấu ngoặc kép nên được đặt trong dấu ngoặc kép `"..."`.
 - Nếu trong field có dấu ngoặc kép, escape bằng cách nhân đôi `""`.
 - Không để thừa hoặc thiếu cột.
 - Không thêm Markdown trong CSV.
@@ -177,10 +177,10 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 ## 5. Choice Question Format
 
-Mỗi record Choice Question phải có đúng 15 cột theo thứ tự:
+Mỗi record Choice Question phải có đúng 14 cột theo thứ tự:
 
 ```csv
-number,question,a,b,c,d,e,f,g,h,i,j,answers,ref,explanation
+number,question,a,b,c,d,answers,word,type,ipa-uk,ipa-us,cerf,definition,vietnamese
 ```
 
 ### 5.1 `number`
@@ -251,12 +251,11 @@ Yêu cầu:
 - Chỉ có một đáp án đúng trong 4 lựa chọn.
 - Không viết kèm từ tiếng Anh trong phần nghĩa tiếng Việt, trừ tên riêng hoặc thuật ngữ bắt buộc.
 
-### 5.3 Columns `a` to `j`
+### 5.3 Columns `a` to `d`
 
 Quy tắc:
 
-- Chỉ sử dụng `a`, `b`, `c`, `d` cho 4 lựa chọn.
-- Các cột `e`, `f`, `g`, `h`, `i`, `j` luôn để trống.
+- Sử dụng `a`, `b`, `c`, `d` cho 4 lựa chọn.
 - Có đúng một đáp án đúng.
 - Đáp án đúng phải là chính xác từ/cụm từ đích trong input.
 - Các distractor phải là đáp án gây nhiễu hợp lý, không phải các từ khác biệt quá nổi bật khiến người học dễ loại bằng cảm tính.
@@ -298,13 +297,49 @@ Quy tắc:
 - Chỉ ghi tên cột chứa đáp án đúng.
 - Không ghi nội dung từ vựng vào cột này.
 
-### 5.5 `ref`
+### 5.5 `word`
 
-Luôn để trống.
+Từ hoặc cụm từ đích, viết hoa chữ cái đầu.
 
-### 5.6 `explanation`
+### 5.6 `type`
 
-Dùng cùng format trong mục `7. Explanation Format`.
+Giá trị là part of speech của từ vựng, viết bằng lowercase.
+
+Ví dụ: `adjective`, `noun`, `verb`, `phrase`.
+
+### 5.7 `ipa-uk`
+
+IPA UK chuẩn, bao gồm cả dấu `/.../`.
+
+Ví dụ: `/nɒkˈtɜː.nəl/`
+
+### 5.8 `ipa-us`
+
+IPA US chuẩn, bao gồm cả dấu `/.../`.
+
+Ví dụ: `/nɑːkˈtɝː.nəl/`
+
+### 5.9 `cerf`
+
+Giá trị CEFR: A1, A2, B1, B2, C1, C2.
+
+Ví dụ: `B2`
+
+### 5.10 `definition`
+
+Giá trị là English definition ngắn gọn, viết hoa chữ cái đầu.
+
+Quy tắc:
+
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
+
+### 5.11 `vietnamese`
+
+Giá trị là nghĩa tiếng Việt ngắn gọn, tự nhiên, đúng ngữ cảnh IELTS.
+
+Quy tắc:
+
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
 
 ---
 
@@ -400,7 +435,6 @@ Giá trị là English definition ngắn gọn, viết hoa chữ cái đầu.
 
 Quy tắc:
 
-- Giống nội dung `p.definition` trong mục `7. Explanation Format`.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
 
 ### 6.9 `vietnamese`
@@ -409,38 +443,11 @@ Giá trị là nghĩa tiếng Việt ngắn gọn, tự nhiên, đúng ngữ c�
 
 Quy tắc:
 
-- Giống nội dung `p.vietnamese` trong mục `7. Explanation Format`.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
 
 ---
 
-## 7. Explanation Format
-
-Bắt buộc sử dụng HTML đúng cấu trúc sau:
-
-```html
-<div><h3 class="word">Word</h3><p class="type">part of speech</p><div class="ipa"><div class="ipa-uk"><b>UK</b><p>/.../</p></div><div class="ipa-us"><b>US</b><p>/.../</p></div></div><p class="cerf">B2</p><p class="definition">Definition.</p><p class="vietnamese">Vietnamese meaning.</p></div>
-```
-
-Ví dụ:
-
-```html
-<div><h3 class="word">Abandon</h3><p class="type">verb</p><div class="ipa"><div class="ipa-uk"><b>UK</b><p>/əˈbæn.dən/</p></div><div class="ipa-us"><b>US</b><p>/əˈbæn.dən/</p></div></div><p class="cerf">B2</p><p class="definition">To leave a place, thing, or person, usually for ever.</p><p class="vietnamese">Từ bỏ, rời bỏ hoặc bỏ rơi một nơi chốn, sự việc, hay con người, thường là vĩnh viễn.</p></div>
-```
-
-Yêu cầu:
-
-- Giữ nguyên class `cerf` để tương thích với dữ liệu hiện tại, dù nội dung là CEFR.
-- `h3.word`: viết hoa chữ cái đầu khi phù hợp, nhưng giữ nguyên tên riêng/ký tự đặc biệt.
-- `p.type`: dùng lowercase, ví dụ `noun`, `verb`, `adjective`, `adverb`, `phrase`.
-- `p.definition`: định nghĩa tiếng Anh ngắn gọn.
-- `p.vietnamese`: nghĩa tiếng Việt tự nhiên.
-- Không thêm tag ngoài cấu trúc trên nếu không cần thiết.
-- Không xuống dòng trong field CSV chứa HTML.
-
----
-
-## 8. Question Count Rules
+## 7. Question Count Rules
 
 Với mỗi từ hợp lệ trong input:
 
@@ -456,12 +463,12 @@ Ví dụ input có 40 từ hợp lệ:
 
 ---
 
-## 9. Output Example
+## 8. Output Example
 
 ### Choice Question Row
 
 ```csv
-1-CAM20-TEST1-PASSAGE1,"Active at night rather than during the day.",solitary,plentiful,nocturnal,unattended,,,,,,,c,,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>"
+1-CAM20-TEST1-PASSAGE1,"Active at night rather than during the day.",solitary,plentiful,nocturnal,unattended,c,Nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm."
 ```
 
 ### Fill The Blank Row
@@ -472,38 +479,33 @@ Ví dụ input có 40 từ hợp lệ:
 
 ---
 
-## 10. Quality Checklist
+## 9. Quality Checklist
 
 Trước khi kết thúc, Agent phải kiểm tra:
 
 - Mỗi file output có đúng tên tương ứng với input.
-- Choice Question có đúng 15 cột mỗi dòng.
+- Choice Question có đúng 14 cột mỗi dòng.
 - Fill The Blank có đúng 9 cột mỗi dòng.
-- Các cột `e` đến `j` trong Choice Question đều trống.
 - `answers` của Choice Question chỉ là `a`, `b`, `c`, hoặc `d`.
-- `ref` trong Choice Question luôn trống.
 - `answer` của Fill The Blank là lowercase.
 - Số thứ tự tăng dần và không trùng.
 - Fill The Blank tiếp tục số thứ tự sau Choice Question.
 - Mỗi từ có đủ Type 1 và Type 2 trong Choice Question.
 - Mỗi câu hỏi chỉ có một đáp án đúng.
 - Distractor không trùng đáp án đúng và không gây nhập nhằng.
-- HTML trong `explanation` hợp lệ.
-- CSV được escape đúng với dấu ngoặc kép trong HTML.
+- CSV được escape đúng với dấu ngoặc kép nếu có.
 - Không có dòng rỗng ngoài ý muốn ở cuối file nếu hệ thống import không yêu cầu.
 
 ---
 
-## 11. Common Mistakes To Avoid
+## 10. Common Mistakes To Avoid
 
 - Không ghi đáp án đúng dạng từ vựng vào cột `answers` của Choice Question.
 - Không dùng nhiều hơn 4 lựa chọn.
-- Không điền dữ liệu vào cột `e` đến `j`.
 - Không để definition quá rộng khiến nhiều lựa chọn đều đúng.
 - Không dùng distractor khác loại từ nếu có lựa chọn tốt hơn.
 - Không bỏ qua IPA UK/US.
-- Không đổi class `cerf` thành `cefr` khi đang theo format dữ liệu hiện tại.
 - Không thêm header vào CSV mới nếu muốn nhất quán với các file hiện có.
-- Không dùng xuống dòng trong HTML field của CSV.
 - Không ghi sai tên cột `answer` thành `answers` trong Fill The Blank.
+- Không bỏ sót cột `word`, `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese` trong Choice Question.
 - Không bỏ sót cột `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese` trong Fill The Blank.
