@@ -88,7 +88,7 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
    - English definition.
    - Vietnamese meaning.
 4. Tạo Choice Question:
-   - Mỗi từ tạo đúng 2 câu: Type 1 và Type 2.
+    - Mỗi từ tạo đúng 1 câu: English Definition.
 5. Tạo Fill The Blank:
    - Mỗi từ tạo ít nhất 1 câu điền từ.
 6. Đánh số liên tục:
@@ -126,7 +126,6 @@ Yêu cầu:
 
 - Ngắn gọn, tự nhiên, đúng ngữ cảnh IELTS.
 - Có thể là cụm danh từ, cụm động từ, hoặc câu giải thích ngắn.
-- Không quá dài nếu dùng trong câu hỏi Type 2.
 - Chỉ diễn đạt một nghĩa chính để tránh nhiều đáp án đúng.
 
 ### IPA
@@ -208,9 +207,7 @@ Quy tắc:
 
 ### 5.2 `question`
 
-Agent phải tạo đủ 2 loại câu hỏi cho mỗi từ.
-
-#### Type 1: Definition => Vocabulary
+Mỗi từ tạo đúng 1 câu hỏi: English Definition => Vocabulary.
 
 Format:
 
@@ -231,26 +228,6 @@ Yêu cầu:
 - Ngắn gọn, chính xác.
 - Chỉ có một đáp án đúng trong 4 lựa chọn.
 
-#### Type 2: Vietnamese Meaning => Vocabulary
-
-Format:
-
-```text
-Nghĩa tiếng Việt.
-```
-
-Ví dụ:
-
-```text
-Hoạt động về đêm.
-```
-
-Yêu cầu:
-
-- Nghĩa tiếng Việt ngắn gọn.
-- Chỉ có một đáp án đúng trong 4 lựa chọn.
-- Không viết kèm từ tiếng Anh trong phần nghĩa tiếng Việt, trừ tên riêng hoặc thuật ngữ bắt buộc.
-
 ### 5.3 Columns `a` to `d`
 
 Quy tắc:
@@ -262,8 +239,7 @@ Quy tắc:
 - Distractor nên cùng loại từ với đáp án đúng nếu có thể.
 - Distractor nên có độ dài, hình thức, mức độ học thuật, và độ khó tương đối gần với đáp án đúng.
 - Ưu tiên distractor cùng chủ đề, cùng ngữ cảnh IELTS, hoặc gần trường nghĩa nhưng không đồng nghĩa hoàn toàn.
-- Với Type 1, distractor cần đủ gần nghĩa để buộc người học hiểu definition, nhưng vẫn sai rõ khi xét chính xác định nghĩa.
-- Với Type 2, distractor cần đủ gần nghĩa tiếng Việt hoặc cùng nhóm chủ đề, nhưng không được là bản dịch đúng của câu hỏi.
+- Distractor cần đủ gần nghĩa để buộc người học hiểu definition, nhưng vẫn sai rõ khi xét chính xác định nghĩa.
 - Nếu input có gợi ý sau `#`, có thể dùng làm distractor khi đó là từ trái nghĩa hoặc lựa chọn dễ nhầm phù hợp.
 - Không chọn distractor khiến câu hỏi có nhiều hơn một đáp án đúng.
 - Không dùng biến thể hình thái quá gần làm nhiễu nếu dễ gây mơ hồ, ví dụ đáp án là `criticise` thì tránh `critical` nếu câu hỏi không kiểm tra word family.
@@ -363,7 +339,7 @@ Quy tắc:
 
 - Không bắt đầu lại từ `1`.
 - Tiếp tục từ số cuối cùng của Choice Question trong cùng input.
-- Ví dụ nếu Choice Question có 80 câu, Fill The Blank bắt đầu từ `81-{INPUT_FILE_STEM}`.
+- Ví dụ nếu Choice Question có 40 câu, Fill The Blank bắt đầu từ `41-{INPUT_FILE_STEM}`.
 
 ### 6.2 `question`
 
@@ -451,15 +427,13 @@ Quy tắc:
 
 Với mỗi từ hợp lệ trong input:
 
-- Tạo 2 Choice Questions:
-  - 1 câu Type 1: Definition => Vocabulary.
-  - 1 câu Type 2: Vietnamese Meaning => Vocabulary.
+- Tạo 1 Choice Question: English Definition => Vocabulary.
 - Tạo ít nhất 1 Fill The Blank question.
 
 Ví dụ input có 40 từ hợp lệ:
 
-- Choice Question: 80 records.
-- Fill The Blank: ít nhất 40 records, bắt đầu từ `81-{INPUT_FILE_STEM}`.
+- Choice Question: 40 records.
+- Fill The Blank: ít nhất 40 records, bắt đầu từ `41-{INPUT_FILE_STEM}`.
 
 ---
 
@@ -474,7 +448,7 @@ Ví dụ input có 40 từ hợp lệ:
 ### Fill The Blank Row
 
 ```csv
-81-CAM20-TEST1-PASSAGE1,"Many animals that hunt after sunset are __.",nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm."
+41-CAM20-TEST1-PASSAGE1,"Many animals that hunt after sunset are __.",nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm."
 ```
 
 ---
@@ -490,7 +464,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - `answer` của Fill The Blank là lowercase.
 - Số thứ tự tăng dần và không trùng.
 - Fill The Blank tiếp tục số thứ tự sau Choice Question.
-- Mỗi từ có đủ Type 1 và Type 2 trong Choice Question.
+- Mỗi từ có đúng 1 câu hỏi Choice Question (English Definition).
 - Mỗi câu hỏi chỉ có một đáp án đúng.
 - Distractor không trùng đáp án đúng và không gây nhập nhằng.
 - CSV được escape đúng với dấu ngoặc kép nếu có.
