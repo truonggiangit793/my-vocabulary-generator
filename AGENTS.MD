@@ -310,10 +310,10 @@ Dùng cùng format trong mục `7. Explanation Format`.
 
 ## 6. Fill The Blank Format
 
-Mỗi record Fill The Blank phải có đúng 5 cột theo thứ tự:
+Mỗi record Fill The Blank phải có đúng 9 cột theo thứ tự:
 
 ```csv
-number,question,answers,explanation,hint
+number,question,answer,type,ipa-uk,ipa-us,cerf,definition,vietnamese
 ```
 
 ### 6.1 `number`
@@ -353,7 +353,7 @@ Yêu cầu:
 - Không để lộ từ đích hoặc biến thể quá rõ của từ đích trong câu hỏi.
 - Không tạo câu quá chung khiến nhiều đáp án khác nhau đều đúng.
 
-### 6.3 `answers`
+### 6.3 `answer`
 
 Quy tắc:
 
@@ -370,17 +370,46 @@ forest-dwelling
 kākāpō
 ```
 
-### 6.4 `explanation`
+### 6.4 `type`
 
-Dùng cùng format trong mục `7. Explanation Format`.
+Giá trị là part of speech của từ vựng, viết bằng lowercase.
 
-### 6.5 `hint`
+Ví dụ: `adjective`, `noun`, `verb`, `phrase`.
 
-Giá trị của cột này là English definition của từ vựng tương ứng, dùng làm gợi ý cho người học.
+### 6.5 `ipa-uk`
+
+IPA UK chuẩn, bao gồm cả dấu `/.../`.
+
+Ví dụ: `/nɒkˈtɜː.nəl/`
+
+### 6.6 `ipa-us`
+
+IPA US chuẩn, bao gồm cả dấu `/.../`.
+
+Ví dụ: `/nɑːkˈtɝː.nəl/`
+
+### 6.7 `cerf`
+
+Giá trị CEFR: A1, A2, B1, B2, C1, C2.
+
+Ví dụ: `B2`
+
+### 6.8 `definition`
+
+Giá trị là English definition ngắn gọn, viết hoa chữ cái đầu.
 
 Quy tắc:
 
-- Giống với nội dung `p.definition` trong cột `explanation`.
+- Giống nội dung `p.definition` trong mục `7. Explanation Format`.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
+
+### 6.9 `vietnamese`
+
+Giá trị là nghĩa tiếng Việt ngắn gọn, tự nhiên, đúng ngữ cảnh IELTS.
+
+Quy tắc:
+
+- Giống nội dung `p.vietnamese` trong mục `7. Explanation Format`.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
 
 ---
@@ -438,7 +467,7 @@ Ví dụ input có 40 từ hợp lệ:
 ### Fill The Blank Row
 
 ```csv
-81-CAM20-TEST1-PASSAGE1,"Many animals that hunt after sunset are __.",nocturnal,"<div><h3 class=""word"">Nocturnal</h3><p class=""type"">adjective</p><div class=""ipa""><div class=""ipa-uk""><b>UK</b><p>/nɒkˈtɜː.nəl/</p></div><div class=""ipa-us""><b>US</b><p>/nɑːkˈtɝː.nəl/</p></div></div><p class=""cerf"">B2</p><p class=""definition"">Active at night rather than during the day.</p><p class=""vietnamese"">Hoạt động về đêm.</p></div>","Active at night rather than during the day."
+81-CAM20-TEST1-PASSAGE1,"Many animals that hunt after sunset are __.",nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm."
 ```
 
 ---
@@ -449,11 +478,11 @@ Trước khi kết thúc, Agent phải kiểm tra:
 
 - Mỗi file output có đúng tên tương ứng với input.
 - Choice Question có đúng 15 cột mỗi dòng.
-- Fill The Blank có đúng 5 cột mỗi dòng.
+- Fill The Blank có đúng 9 cột mỗi dòng.
 - Các cột `e` đến `j` trong Choice Question đều trống.
 - `answers` của Choice Question chỉ là `a`, `b`, `c`, hoặc `d`.
 - `ref` trong Choice Question luôn trống.
-- `answers` của Fill The Blank là lowercase.
+- `answer` của Fill The Blank là lowercase.
 - Số thứ tự tăng dần và không trùng.
 - Fill The Blank tiếp tục số thứ tự sau Choice Question.
 - Mỗi từ có đủ Type 1 và Type 2 trong Choice Question.
@@ -476,3 +505,5 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không đổi class `cerf` thành `cefr` khi đang theo format dữ liệu hiện tại.
 - Không thêm header vào CSV mới nếu muốn nhất quán với các file hiện có.
 - Không dùng xuống dòng trong HTML field của CSV.
+- Không ghi sai tên cột `answer` thành `answers` trong Fill The Blank.
+- Không bỏ sót cột `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese` trong Fill The Blank.
