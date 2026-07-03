@@ -87,6 +87,7 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
    - CEFR.
    - English definition.
    - Vietnamese meaning.
+   - Image URL (tìm kiếm từ internet).
 4. Tạo Choice Question:
     - Mỗi từ tạo đúng 1 câu: English Definition.
 5. Tạo Fill The Blank:
@@ -176,10 +177,10 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 ## 5. Choice Question Format
 
-Mỗi record Choice Question phải có đúng 14 cột theo thứ tự:
+Mỗi record Choice Question phải có đúng 15 cột theo thứ tự:
 
 ```csv
-number,question,a,b,c,d,answers,word,type,ipa-uk,ipa-us,cerf,definition,vietnamese
+number,question,a,b,c,d,answers,word,type,ipa-uk,ipa-us,cerf,definition,vietnamese,image
 ```
 
 ### 5.1 `number`
@@ -317,14 +318,26 @@ Quy tắc:
 
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
 
+### 5.12 `image`
+
+Đường dẫn (URL) hình ảnh minh họa cho từ vựng.
+
+Quy tắc:
+
+- URL hợp lệ trỏ đến file ảnh (`.png`, `.jpg`, `.jpeg`, `.webp`, ...).
+- Hình ảnh giúp người học liên tưởng trực quan đến nghĩa của từ.
+- Ưu tiên ảnh có tỉ lệ 16:9 hoặc gần bằng 16:9.
+- Agent tự tìm kiếm nguồn ảnh phù hợp từ internet (Unsplash, Pixabay, Freepik, hoặc công cụ tìm kiếm hình ảnh khác) khi tạo danh sách.
+- Nếu không tìm được ảnh phù hợp, có thể để trống.
+
 ---
 
 ## 6. Fill The Blank Format
 
-Mỗi record Fill The Blank phải có đúng 9 cột theo thứ tự:
+Mỗi record Fill The Blank phải có đúng 10 cột theo thứ tự:
 
 ```csv
-number,question,answer,type,ipa-uk,ipa-us,cerf,definition,vietnamese
+number,question,answer,type,ipa-uk,ipa-us,cerf,definition,vietnamese,image
 ```
 
 ### 6.1 `number`
@@ -421,6 +434,18 @@ Quy tắc:
 
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
 
+### 6.10 `image`
+
+Đường dẫn (URL) hình ảnh minh họa cho từ vựng.
+
+Quy tắc:
+
+- URL hợp lệ trỏ đến file ảnh (`.png`, `.jpg`, `.jpeg`, `.webp`, ...).
+- Hình ảnh giúp người học liên tưởng trực quan đến nghĩa của từ.
+- Ưu tiên ảnh có tỉ lệ 16:9 hoặc gần bằng 16:9.
+- Agent tự tìm kiếm nguồn ảnh phù hợp từ internet (Unsplash, Pixabay, Freepik, hoặc công cụ tìm kiếm hình ảnh khác) khi tạo danh sách.
+- Nếu không tìm được ảnh phù hợp, có thể để trống.
+
 ---
 
 ## 7. Question Count Rules
@@ -442,7 +467,7 @@ Ví dụ input có 40 từ hợp lệ:
 ### Choice Question Row
 
 ```csv
-1-CAM20-TEST1-PASSAGE1,"Active at night rather than during the day.",solitary,plentiful,nocturnal,unattended,c,Nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm."
+1-CAM20-TEST1-PASSAGE1,"Active at night rather than during the day.",solitary,plentiful,nocturnal,unattended,c,Nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm.",
 ```
 
 ### Fill The Blank Row
@@ -458,8 +483,8 @@ Ví dụ input có 40 từ hợp lệ:
 Trước khi kết thúc, Agent phải kiểm tra:
 
 - Mỗi file output có đúng tên tương ứng với input.
-- Choice Question có đúng 14 cột mỗi dòng.
-- Fill The Blank có đúng 9 cột mỗi dòng.
+- Choice Question có đúng 15 cột mỗi dòng.
+- Fill The Blank có đúng 10 cột mỗi dòng.
 - `answers` của Choice Question chỉ là `a`, `b`, `c`, hoặc `d`.
 - `answer` của Fill The Blank là lowercase.
 - Số thứ tự tăng dần và không trùng.
@@ -481,5 +506,5 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không bỏ qua IPA UK/US.
 - Không thêm header vào CSV mới nếu muốn nhất quán với các file hiện có.
 - Không ghi sai tên cột `answer` thành `answers` trong Fill The Blank.
-- Không bỏ sót cột `word`, `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese` trong Choice Question.
-- Không bỏ sót cột `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese` trong Fill The Blank.
+- Không bỏ sót cột `word`, `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese`, `image` trong Choice Question.
+- Không bỏ sót cột `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese`, `image` trong Fill The Blank.
