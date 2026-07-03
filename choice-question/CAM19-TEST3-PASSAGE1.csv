@@ -10,10 +10,10 @@
 10-CAM19-TEST3-PASSAGE1,Situated furthest to the north.,Rainforest,Northernmost,Bead,Artifact,b,Northernmost,adjective,/ˈnɔː.ðən.məʊst/,/ˈnɔːr.ðərn.moʊst/,B2,Situated furthest to the north.,Cực bắc.
 11-CAM19-TEST3-PASSAGE1,The movement of people or animals to another place.,Occupation,Tropical,Migration,Voyage,c,Migration,noun,/maɪˈɡreɪ.ʃən/,/maɪˈɡreɪ.ʃən/,B2,The movement of people or animals to another place.,Sự di cư.
 12-CAM19-TEST3-PASSAGE1,A person who migrates through a place to another.,Bring over,Stepping stone,Transmigrant,Departure,c,Transmigrant,noun,/trænzˈmaɪ.ɡrənt/,/trænzˈmaɪ.ɡrənt/,C1,A person who migrates through a place to another.,Người di cư trung chuyển.
-13-CAM19-TEST3-PASSAGE1,A place used as a stopping point on a journey.,Transmigrant,Stepping stone,Excavation,Archaeologists,b,Stepping stone,noun phrase,/ˈstep.ɪŋ stəʊn/,/ˈstep.ɪŋ stoʊn/,B2,A place used as a stopping point on a journey.,"Điểm dừng chân, bàn đạp."
+13-CAM19-TEST3-PASSAGE1,A place used as a stopping point on a journey.,Transmigrant,Stepping stone,Excavation,Archaeologists,b,Stepping stone,noun phrase,/ˈstep.ɪŋ stəʊn/,/ˈstep.ɪŋ stoʊn/,B2,A place used as a stopping point on a journey.,Điểm dừng chân.
 14-CAM19-TEST3-PASSAGE1,Traveling between islands in a series of short trips.,Substance,Means of survival,Northernmost,Island-hopping,d,Island-hopping,noun,/ˈaɪ.lənd ˌhɒp.ɪŋ/,/ˈaɪ.lənd ˌhɑː.pɪŋ/,C1,Traveling between islands in a series of short trips.,Đi từ đảo này sang đảo khác.
 15-CAM19-TEST3-PASSAGE1,Periods of one thousand years.,Pottery,Occupation,Millennia,Spices,c,Millennia,noun,/mɪˈlen.i.ə/,/mɪˈlen.i.ə/,B2,Periods of one thousand years.,Hàng thiên niên kỷ.
-16-CAM19-TEST3-PASSAGE1,The act of living or settling in a place.,Millennia,Obsidian,Roughly,Occupation,d,Occupation,noun,/ˌɒk.jəˈpeɪ.ʃən/,/ˌɑː.kjəˈpeɪ.ʃən/,B2,The act of living or settling in a place.,"Sự cư trú, chiếm đóng."
+16-CAM19-TEST3-PASSAGE1,The act of living or settling in a place.,Millennia,Obsidian,Roughly,Occupation,d,Occupation,noun,/ˌɒk.jəˈpeɪ.ʃən/,/ˌɑː.kjəˈpeɪ.ʃən/,B2,The act of living or settling in a place.,Sự cư trú.
 17-CAM19-TEST3-PASSAGE1,A place giving protection from the weather.,Millennia,Adept,Shelter,Axes,c,Shelter,noun,/ˈʃel.tər/,/ˈʃel.t̬ɚ/,B2,A place giving protection from the weather.,Nơi trú ẩn.
 18-CAM19-TEST3-PASSAGE1,An object made by humans from the past.,Undergrowth,Means of survival,Artifact,Coincidence,c,Artifact,noun,/ˈɑː.tɪ.fækt/,/ˈɑːr.t̬ə.fækt/,B2,An object made by humans from the past.,Cổ vật.
 19-CAM19-TEST3-PASSAGE1,A small piece broken off from something.,Artifact,Resident,Fragment,Island-hopping,c,Fragment,noun,/ˈfræɡ.mənt/,/ˈfræɡ.mənt/,B2,A small piece broken off from something.,Mảnh vỡ.
@@ -32,7 +32,7 @@
 32-CAM19-TEST3-PASSAGE1,A small area of something.,Obsidian,Abandon,Rainforest,Patch,d,Patch,noun,/pætʃ/,/pætʃ/,B2,A small area of something.,"Mảng, vùng nhỏ."
 33-CAM19-TEST3-PASSAGE1,Relating to or produced by a volcano.,Transmigrant,Volcanic,Made out of,Ice age,b,Volcanic,adjective,/vɒlˈkæn.ɪk/,/vɑːlˈkæn.ɪk/,B2,Relating to or produced by a volcano.,Thuộc về núi lửa.
 34-CAM19-TEST3-PASSAGE1,"A type of solid, liquid, or gas material.",Roughly,Substance,Shelter,Occupation,b,Substance,noun,/ˈsʌb.stəns/,/ˈsʌb.stəns/,B2,"A type of solid, liquid, or gas material.",Chất liệu.
-35-CAM19-TEST3-PASSAGE1,A dark volcanic glass used to make sharp tools.,Resident,Island-hopping,Obsidian,Tropical,c,Obsidian,noun,/əbˈsɪd.i.ən/,/əbˈsɪd.i.ən/,C1,A dark volcanic glass used to make sharp tools.,"Đá vỏ chai, đá obsidian."
+35-CAM19-TEST3-PASSAGE1,A dark volcanic glass used to make sharp tools.,Resident,Island-hopping,Obsidian,Tropical,c,Obsidian,noun,/əbˈsɪd.i.ən/,/əbˈsɪd.i.ən/,C1,A dark volcanic glass used to make sharp tools.,Đá vỏ chai.
 36-CAM19-TEST3-PASSAGE1,To transport or carry something to another place.,Artifact,Pottery,Bring over,Substance,c,Bring over,phrase,/brɪŋ ˈəʊ.vər/,/brɪŋ ˈoʊ.vɚ/,B2,To transport or carry something to another place.,"Mang đến, vận chuyển."
 37-CAM19-TEST3-PASSAGE1,A small decorative object with a hole for threading.,Encompass,Bead,Heavy-duty,Undergrowth,b,Bead,noun,/biːd/,/biːd/,B1,A small decorative object with a hole for threading.,Hạt cườm.
 38-CAM19-TEST3-PASSAGE1,A person who lives on an island.,Islander,Tropical,Impenetrable,Cuscus,a,Islander,noun,/ˈaɪ.lən.dər/,/ˈaɪ.lən.dɚ/,B2,A person who lives on an island.,Người dân đảo.
@@ -40,7 +40,7 @@
 40-CAM19-TEST3-PASSAGE1,To leave a place or thing permanently.,Stepping stone,Abandon,Means of survival,Substance,b,Abandon,verb,/əˈbæn.dən/,/əˈbæn.dən/,B2,To leave a place or thing permanently.,"Bỏ hoang, từ bỏ."
 41-CAM19-TEST3-PASSAGE1,A person who lives in a particular place.,Resident,Disperse,Island-hopping,Routinely,a,Resident,noun,/ˈrez.ɪ.dənt/,/ˈrez.ə.dənt/,B2,A person who lives in a particular place.,Cư dân.
 42-CAM19-TEST3-PASSAGE1,Thick and difficult to see or move through.,Archipelago,Dense,Disperse,Craft,b,Dense,adjective,/dens/,/dens/,B2,Thick and difficult to see or move through.,Dày đặc.
-43-CAM19-TEST3-PASSAGE1,Bushes and plants growing under trees.,Impenetrable,Undergrowth,Unearth,Resident,b,Undergrowth,noun,/ˈʌn.də.ɡrəʊθ/,/ˈʌn.dɚ.ɡroʊθ/,B2,Bushes and plants growing under trees.,"Cây bụi, thảm thực vật."
+43-CAM19-TEST3-PASSAGE1,Bushes and plants growing under trees.,Impenetrable,Undergrowth,Unearth,Resident,b,Undergrowth,noun,/ˈʌn.də.ɡrəʊθ/,/ˈʌn.dɚ.ɡroʊθ/,B2,Bushes and plants growing under trees.,Cây bụi.
 44-CAM19-TEST3-PASSAGE1,A way to continue living.,Means of survival,Made out of,Spices,Islander,a,Means of survival,phrase,/miːnz əv səˈvaɪ.vəl/,/miːnz əv sɚˈvaɪ.vəl/,B2,A way to continue living.,Phương tiện sinh tồn.
 45-CAM19-TEST3-PASSAGE1,The act of leaving a place.,Departure,Abandon,Tropical,Cuscus,a,Departure,noun,/dɪˈpɑː.tʃər/,/dɪˈpɑːr.tʃɚ/,B2,The act of leaving a place.,Sự khởi hành.
 46-CAM19-TEST3-PASSAGE1,To occupy or settle in again.,Means of survival,Northernmost,Encompass,Re-occupy,d,Re-occupy,verb,/ˌriː ˈɒk.jə.paɪ/,/ˌriː ˈɑː.kjə.paɪ/,C1,To occupy or settle in again.,Tái chiếm đóng.
