@@ -87,7 +87,7 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
    - CEFR.
    - English definition.
    - Vietnamese meaning.
-   - Image URL (tìm kiếm từ internet).
+   - Image URL (lấy từ cdn.langeek.co).
 4. Tạo Choice Question:
     - Mỗi từ tạo đúng 1 câu: English Definition.
 5. Tạo Fill The Blank:
@@ -324,10 +324,10 @@ Quy tắc:
 
 Quy tắc:
 
-- URL hợp lệ trỏ đến file ảnh (`.png`, `.jpg`, `.jpeg`, `.webp`, ...).
+- URL hợp lệ trỏ đến file ảnh (`.png`, `.jpg`, `.jpeg`, `.webp`, ...) từ cdn.langeek.co.
 - Hình ảnh giúp người học liên tưởng trực quan đến nghĩa của từ.
 - Ưu tiên ảnh có tỉ lệ 16:9 hoặc gần bằng 16:9.
-- Agent tự tìm kiếm nguồn ảnh phù hợp từ internet (Unsplash, Pixabay, Freepik, hoặc công cụ tìm kiếm hình ảnh khác) khi tạo danh sách.
+- Agent tự xây dựng URL ảnh phù hợp từ cdn.langeek.co khi tạo danh sách.
 - Nếu không tìm được ảnh phù hợp, có thể để trống.
 
 ---
@@ -440,10 +440,10 @@ Quy tắc:
 
 Quy tắc:
 
-- URL hợp lệ trỏ đến file ảnh (`.png`, `.jpg`, `.jpeg`, `.webp`, ...).
+- URL hợp lệ trỏ đến file ảnh (`.png`, `.jpg`, `.jpeg`, `.webp`, ...) từ cdn.langeek.co.
 - Hình ảnh giúp người học liên tưởng trực quan đến nghĩa của từ.
 - Ưu tiên ảnh có tỉ lệ 16:9 hoặc gần bằng 16:9.
-- Agent tự tìm kiếm nguồn ảnh phù hợp từ internet (Unsplash, Pixabay, Freepik, hoặc công cụ tìm kiếm hình ảnh khác) khi tạo danh sách.
+- Agent tự xây dựng URL ảnh phù hợp từ cdn.langeek.co khi tạo danh sách.
 - Nếu không tìm được ảnh phù hợp, có thể để trống.
 
 ---
