@@ -328,7 +328,7 @@ Quy tắc:
 - Hình ảnh giúp người học liên tưởng trực quan đến nghĩa của từ.
 - Ưu tiên ảnh có tỉ lệ 16:9 hoặc gần bằng 16:9.
 - Agent tự xây dựng URL ảnh phù hợp từ cdn.langeek.co khi tạo danh sách.
-- Nếu không tìm được ảnh phù hợp, có thể để trống.
+- Tuyệt đối không được để trống. Nếu không tìm được ảnh trực tiếp cho từ đích, hãy thử tìm ảnh với từ đồng nghĩa hoặc từ vựng cùng ngữ cảnh phù hợp.
 
 ---
 
@@ -444,7 +444,7 @@ Quy tắc:
 - Hình ảnh giúp người học liên tưởng trực quan đến nghĩa của từ.
 - Ưu tiên ảnh có tỉ lệ 16:9 hoặc gần bằng 16:9.
 - Agent tự xây dựng URL ảnh phù hợp từ cdn.langeek.co khi tạo danh sách.
-- Nếu không tìm được ảnh phù hợp, có thể để trống.
+- Tuyệt đối không được để trống. Nếu không tìm được ảnh trực tiếp cho từ đích, hãy thử tìm ảnh với từ đồng nghĩa hoặc từ vựng cùng ngữ cảnh phù hợp.
 
 ---
 
