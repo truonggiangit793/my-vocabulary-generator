@@ -87,7 +87,11 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
    - CEFR.
    - English definition.
    - Vietnamese meaning.
-   - Image URL (lấy từ cdn.langeek.co).
+   - Image URL (để trống).
+   - Example sentence (câu ví dụ tự nhiên, gần gũi, dùng được trong đời sống hàng ngày).
+   - Vietnamese translation of the example sentence.
+   - Synonym list (tìm các từ đồng nghĩa phù hợp, kèm nghĩa tiếng Việt).
+   - Opposite list (tìm các từ trái nghĩa phù hợp, kèm nghĩa tiếng Việt).
 4. Tạo Choice Question:
     - Mỗi từ tạo đúng 1 câu: English Definition.
 5. Tạo Fill The Blank:
@@ -126,6 +130,7 @@ Yêu cầu:
 Yêu cầu:
 
 - Ngắn gọn, tự nhiên, đúng ngữ cảnh IELTS.
+- Viết hoa chữ cái đầu.
 - Có thể là cụm danh từ, cụm động từ, hoặc câu giải thích ngắn.
 - Chỉ diễn đạt một nghĩa chính để tránh nhiều đáp án đúng.
 
@@ -177,10 +182,10 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 ## 5. Choice Question Format
 
-Mỗi record Choice Question phải có đúng 15 cột theo thứ tự:
+Mỗi record Choice Question phải có đúng 19 cột theo thứ tự:
 
 ```csv
-number,question,a,b,c,d,answers,word,type,ipa-uk,ipa-us,cerf,definition,vietnamese,image
+number,question,a,b,c,d,answers,word,type,ipa-uk,ipa-us,cerf,definition,vietnamese,image,example,eg-vie,synonym,opposite
 ```
 
 ### 5.1 `number`
@@ -234,6 +239,7 @@ Yêu cầu:
 Quy tắc:
 
 - Sử dụng `a`, `b`, `c`, `d` cho 4 lựa chọn.
+- Viết lowercase toàn bộ.
 - Có đúng một đáp án đúng.
 - Đáp án đúng phải là chính xác từ/cụm từ đích trong input.
 - Các distractor phải là đáp án gây nhiễu hợp lý, không phải các từ khác biệt quá nổi bật khiến người học dễ loại bằng cảm tính.
@@ -276,7 +282,7 @@ Quy tắc:
 
 ### 5.5 `word`
 
-Từ hoặc cụm từ đích, viết hoa chữ cái đầu.
+Từ hoặc cụm từ đích, viết lowercase toàn bộ.
 
 ### 5.6 `type`
 
@@ -324,20 +330,61 @@ Quy tắc:
 
 Quy tắc:
 
-- URL hợp lệ trỏ đến file ảnh (`.png`, `.jpg`, `.jpeg`, `.webp`, ...) từ cdn.langeek.co.
-- Hình ảnh giúp người học liên tưởng trực quan đến nghĩa của từ.
-- Ưu tiên ảnh có tỉ lệ 16:9 hoặc gần bằng 16:9.
-- Agent tự xây dựng URL ảnh phù hợp từ cdn.langeek.co khi tạo danh sách.
-- Tuyệt đối không được để trống. Nếu không tìm được ảnh trực tiếp cho từ đích, hãy thử tìm ảnh với từ đồng nghĩa hoặc từ vựng cùng ngữ cảnh phù hợp.
+- Để trống. Cột này vẫn tồn tại nhưng không điền giá trị.
+
+### 5.13 `example`
+
+Câu ví dụ sử dụng từ vựng trong ngữ cảnh tự nhiên, gần gũi, dễ nhớ.
+
+Quy tắc:
+
+- Viết hoa chữ cái đầu.
+- Câu ví dụ phải tự nhiên, gần gũi, có thể dùng được trong đời sống hàng ngày, không quá cao siêu hoặc chuyên ngành.
+- Ngữ cảnh dễ nhớ, giúp người học liên tưởng đến nghĩa của từ.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
+
+### 5.14 `eg-vie`
+
+Bản dịch tiếng Việt của câu ví dụ ở cột `example`.
+
+Quy tắc:
+
+- Dịch tự nhiên, sát nghĩa, phù hợp ngữ cảnh.
+- Viết hoa chữ cái đầu.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
+
+### 5.15 `synonym`
+
+Danh sách từ đồng nghĩa của từ vựng.
+
+Quy tắc:
+
+- Các từ đồng nghĩa phù hợp, kèm nghĩa tiếng Việt.
+- Định dạng: `word (nghĩa tiếng Việt), word (nghĩa tiếng Việt), ...`
+- Mỗi từ kèm giải thích nghĩa tiếng Việt trong cặp dấu `()`.
+- Nếu không có từ đồng nghĩa phù hợp, để trống cột này.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
+
+### 5.16 `opposite`
+
+Danh sách từ trái nghĩa của từ vựng.
+
+Quy tắc:
+
+- Các từ trái nghĩa phù hợp, kèm nghĩa tiếng Việt.
+- Định dạng: `word (nghĩa tiếng Việt), word (nghĩa tiếng Việt), ...`
+- Mỗi từ kèm giải thích nghĩa tiếng Việt trong cặp dấu `()`.
+- Nếu không có từ trái nghĩa phù hợp, để trống cột này.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
 
 ---
 
 ## 6. Fill The Blank Format
 
-Mỗi record Fill The Blank phải có đúng 10 cột theo thứ tự:
+Mỗi record Fill The Blank phải có đúng 14 cột theo thứ tự:
 
 ```csv
-number,question,answer,type,ipa-uk,ipa-us,cerf,definition,vietnamese,image
+number,question,answer,type,ipa-uk,ipa-us,cerf,definition,vietnamese,image,example,eg-vie,synonym,opposite
 ```
 
 ### 6.1 `number`
@@ -371,6 +418,7 @@ Many desert animals are __ and become active after sunset.
 Yêu cầu:
 
 - Câu ví dụ phải tự nhiên và phù hợp ngữ cảnh IELTS.
+- Viết hoa chữ cái đầu.
 - Mỗi `__` chỉ đại diện cho **1 từ**.
 - Với cụm từ có nhiều từ, dùng số lượng `__` tương ứng với số từ trong cụm. Ví dụ `home range` → `__ __`, `account for` → `__ __`.
 - Câu phải có đủ ngữ cảnh để suy ra một đáp án hợp lý.
@@ -440,11 +488,52 @@ Quy tắc:
 
 Quy tắc:
 
-- URL hợp lệ trỏ đến file ảnh (`.png`, `.jpg`, `.jpeg`, `.webp`, ...) từ cdn.langeek.co.
-- Hình ảnh giúp người học liên tưởng trực quan đến nghĩa của từ.
-- Ưu tiên ảnh có tỉ lệ 16:9 hoặc gần bằng 16:9.
-- Agent tự xây dựng URL ảnh phù hợp từ cdn.langeek.co khi tạo danh sách.
-- Tuyệt đối không được để trống. Nếu không tìm được ảnh trực tiếp cho từ đích, hãy thử tìm ảnh với từ đồng nghĩa hoặc từ vựng cùng ngữ cảnh phù hợp.
+- Để trống. Cột này vẫn tồn tại nhưng không điền giá trị.
+
+### 6.11 `example`
+
+Câu ví dụ sử dụng từ vựng trong ngữ cảnh tự nhiên, gần gũi, dễ nhớ.
+
+Quy tắc:
+
+- Viết hoa chữ cái đầu.
+- Câu ví dụ phải tự nhiên, gần gũi, có thể dùng được trong đời sống hàng ngày, không quá cao siêu hoặc chuyên ngành.
+- Ngữ cảnh dễ nhớ, giúp người học liên tưởng đến nghĩa của từ.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
+
+### 6.12 `eg-vie`
+
+Bản dịch tiếng Việt của câu ví dụ ở cột `example`.
+
+Quy tắc:
+
+- Dịch tự nhiên, sát nghĩa, phù hợp ngữ cảnh.
+- Viết hoa chữ cái đầu.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
+
+### 6.13 `synonym`
+
+Danh sách từ đồng nghĩa của từ vựng.
+
+Quy tắc:
+
+- Các từ đồng nghĩa phù hợp, kèm nghĩa tiếng Việt.
+- Định dạng: `word (nghĩa tiếng Việt), word (nghĩa tiếng Việt), ...`
+- Mỗi từ kèm giải thích nghĩa tiếng Việt trong cặp dấu `()`.
+- Nếu không có từ đồng nghĩa phù hợp, để trống cột này.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
+
+### 6.14 `opposite`
+
+Danh sách từ trái nghĩa của từ vựng.
+
+Quy tắc:
+
+- Các từ trái nghĩa phù hợp, kèm nghĩa tiếng Việt.
+- Định dạng: `word (nghĩa tiếng Việt), word (nghĩa tiếng Việt), ...`
+- Mỗi từ kèm giải thích nghĩa tiếng Việt trong cặp dấu `()`.
+- Nếu không có từ trái nghĩa phù hợp, để trống cột này.
+- Không chứa dấu ngoặc kép hoặc xuống dòng.
 
 ---
 
@@ -467,13 +556,13 @@ Ví dụ input có 40 từ hợp lệ:
 ### Choice Question Row
 
 ```csv
-1-CAM20-TEST1-PASSAGE1,"Active at night rather than during the day.",solitary,plentiful,nocturnal,unattended,c,Nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm.",
+1-CAM20-TEST1-PASSAGE1,"Active at night rather than during the day.",solitary,plentiful,nocturnal,unattended,c,nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm.",,"Many animals like owls are nocturnal and hunt at night.","Nhiều loài động vật như cú là loài hoạt động về đêm và săn mồi vào ban đêm.",night-active (hoạt động về đêm),daytime (ban ngày)
 ```
 
 ### Fill The Blank Row
 
 ```csv
-41-CAM20-TEST1-PASSAGE1,"Many animals that hunt after sunset are __.",nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm."
+41-CAM20-TEST1-PASSAGE1,"Many animals that hunt after sunset are __.",nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm.",,,,
 ```
 
 ---
@@ -483,8 +572,8 @@ Ví dụ input có 40 từ hợp lệ:
 Trước khi kết thúc, Agent phải kiểm tra:
 
 - Mỗi file output có đúng tên tương ứng với input.
-- Choice Question có đúng 15 cột mỗi dòng.
-- Fill The Blank có đúng 10 cột mỗi dòng.
+- Choice Question có đúng 19 cột mỗi dòng.
+- Fill The Blank có đúng 14 cột mỗi dòng.
 - `answers` của Choice Question chỉ là `a`, `b`, `c`, hoặc `d`.
 - `answer` của Fill The Blank là lowercase.
 - Số thứ tự tăng dần và không trùng.
@@ -506,5 +595,5 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không bỏ qua IPA UK/US.
 - Không thêm header vào CSV mới nếu muốn nhất quán với các file hiện có.
 - Không ghi sai tên cột `answer` thành `answers` trong Fill The Blank.
-- Không bỏ sót cột `word`, `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese`, `image` trong Choice Question.
-- Không bỏ sót cột `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese`, `image` trong Fill The Blank.
+- Không bỏ sót cột `word`, `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese`, `image`, `example`, `eg-vie`, `synonym`, `opposite` trong Choice Question.
+- Không bỏ sót cột `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese`, `image`, `example`, `eg-vie`, `synonym`, `opposite` trong Fill The Blank.
