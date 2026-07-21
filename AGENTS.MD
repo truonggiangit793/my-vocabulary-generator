@@ -121,6 +121,7 @@ Yêu cầu:
 
 - Ngắn gọn, tự nhiên, dễ hiểu.
 - Viết hoa chữ cái đầu.
+- Phải có chấm cuối câu.
 - Phù hợp đúng nghĩa của từ trong input.
 - Không dùng chính từ đích trong definition nếu có thể tránh.
 - Chỉ diễn đạt một nghĩa chính để tránh nhiều đáp án đúng.
@@ -131,6 +132,7 @@ Yêu cầu:
 
 - Ngắn gọn, tự nhiên, đúng ngữ cảnh IELTS.
 - Viết hoa chữ cái đầu.
+- Phải có chấm cuối câu.
 - Có thể là cụm danh từ, cụm động từ, hoặc câu giải thích ngắn.
 - Chỉ diễn đạt một nghĩa chính để tránh nhiều đáp án đúng.
 
@@ -231,6 +233,7 @@ Yêu cầu:
 
 - Definition viết bằng tiếng Anh.
 - Viết hoa chữ cái đầu.
+- Phải có chấm cuối câu.
 - Ngắn gọn, chính xác.
 - Chỉ có một đáp án đúng trong 4 lựa chọn.
 
@@ -240,6 +243,7 @@ Quy tắc:
 
 - Sử dụng `a`, `b`, `c`, `d` cho 4 lựa chọn.
 - Viết lowercase toàn bộ.
+- Không chấm cuối câu.
 - Có đúng một đáp án đúng.
 - Đáp án đúng phải là chính xác từ/cụm từ đích trong input.
 - Các distractor phải là đáp án gây nhiễu hợp lý, không phải các từ khác biệt quá nổi bật khiến người học dễ loại bằng cảm tính.
@@ -314,7 +318,7 @@ Giá trị là English definition ngắn gọn, viết hoa chữ cái đầu.
 
 Quy tắc:
 
-- Không chứa dấu ngoặc kép hoặc xuống dòng.
+- Không chứa dấu ngoặc kép hoặc xuống dòng, phải có chấm cuối câu.
 
 ### 5.11 `vietnamese`
 
@@ -322,7 +326,7 @@ Giá trị là nghĩa tiếng Việt ngắn gọn, tự nhiên, đúng ngữ c�
 
 Quy tắc:
 
-- Không chứa dấu ngoặc kép hoặc xuống dòng.
+- Không chứa dấu ngoặc kép hoặc xuống dòng, phải có chấm cuối câu.
 
 ### 5.12 `image`
 
@@ -352,6 +356,7 @@ Quy tắc:
 - Dịch tự nhiên, sát nghĩa, phù hợp ngữ cảnh.
 - Viết hoa chữ cái đầu.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
+- Phải có chấm cuối câu.
 
 ### 5.15 `synonym`
 
@@ -364,6 +369,7 @@ Quy tắc:
 - Mỗi từ kèm giải thích nghĩa tiếng Việt trong cặp dấu `()`.
 - Nếu không có từ đồng nghĩa phù hợp, để trống cột này.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
+- Không chấm cuối câu.
 
 ### 5.16 `opposite`
 
@@ -376,6 +382,7 @@ Quy tắc:
 - Mỗi từ kèm giải thích nghĩa tiếng Việt trong cặp dấu `()`.
 - Nếu không có từ trái nghĩa phù hợp, để trống cột này.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
+- Không chấm cuối câu.
 
 ---
 
@@ -419,6 +426,7 @@ Yêu cầu:
 
 - Câu ví dụ phải tự nhiên và phù hợp ngữ cảnh IELTS.
 - Viết hoa chữ cái đầu.
+- Phải có chấm cuối câu.
 - Mỗi `__` chỉ đại diện cho **1 từ**.
 - Với cụm từ có nhiều từ, dùng số lượng `__` tương ứng với số từ trong cụm. Ví dụ `home range` → `__ __`, `account for` → `__ __`.
 - Câu phải có đủ ngữ cảnh để suy ra một đáp án hợp lý.
@@ -431,6 +439,7 @@ Quy tắc:
 
 - Ghi đáp án đúng ở dạng lowercase.
 - Giữ dấu gạch nối, khoảng trắng, và ký tự đặc biệt nếu thuộc từ gốc.
+- Không chấm cuối câu.
 - Với cụm từ, ghi đầy đủ cụm từ.
 
 Ví dụ:
@@ -472,7 +481,7 @@ Giá trị là English definition ngắn gọn, viết hoa chữ cái đầu.
 
 Quy tắc:
 
-- Không chứa dấu ngoặc kép hoặc xuống dòng.
+- Không chứa dấu ngoặc kép hoặc xuống dòng, phải có chấm cuối câu.
 
 ### 6.9 `vietnamese`
 
@@ -480,7 +489,7 @@ Giá trị là nghĩa tiếng Việt ngắn gọn, tự nhiên, đúng ngữ c�
 
 Quy tắc:
 
-- Không chứa dấu ngoặc kép hoặc xuống dòng.
+- Không chứa dấu ngoặc kép hoặc xuống dòng, phải có chấm cuối câu.
 
 ### 6.10 `image`
 
@@ -497,6 +506,7 @@ Câu ví dụ sử dụng từ vựng trong ngữ cảnh tự nhiên, gần gũi
 Quy tắc:
 
 - Viết hoa chữ cái đầu.
+- Phải có chấm cuối câu.
 - Câu ví dụ phải tự nhiên, gần gũi, có thể dùng được trong đời sống hàng ngày, không quá cao siêu hoặc chuyên ngành.
 - Ngữ cảnh dễ nhớ, giúp người học liên tưởng đến nghĩa của từ.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
@@ -509,6 +519,7 @@ Quy tắc:
 
 - Dịch tự nhiên, sát nghĩa, phù hợp ngữ cảnh.
 - Viết hoa chữ cái đầu.
+- Phải có chấm cuối câu.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
 
 ### 6.13 `synonym`
@@ -521,6 +532,7 @@ Quy tắc:
 - Định dạng: `word (nghĩa tiếng Việt), word (nghĩa tiếng Việt), ...`
 - Mỗi từ kèm giải thích nghĩa tiếng Việt trong cặp dấu `()`.
 - Nếu không có từ đồng nghĩa phù hợp, để trống cột này.
+- Không chấm cuối câu.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
 
 ### 6.14 `opposite`
@@ -533,6 +545,7 @@ Quy tắc:
 - Định dạng: `word (nghĩa tiếng Việt), word (nghĩa tiếng Việt), ...`
 - Mỗi từ kèm giải thích nghĩa tiếng Việt trong cặp dấu `()`.
 - Nếu không có từ trái nghĩa phù hợp, để trống cột này.
+- Không chấm cuối câu.
 - Không chứa dấu ngoặc kép hoặc xuống dòng.
 
 ---
@@ -582,6 +595,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Mỗi câu hỏi chỉ có một đáp án đúng.
 - Distractor không trùng đáp án đúng và không gây nhập nhằng.
 - CSV được escape đúng với dấu ngoặc kép nếu có.
+- Kiểm tra dấu chấm câu tương ứng theo yêu cầu.
 - Không có dòng rỗng ngoài ý muốn ở cuối file nếu hệ thống import không yêu cầu.
 
 ---
