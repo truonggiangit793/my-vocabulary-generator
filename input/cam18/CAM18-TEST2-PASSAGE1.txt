@@ -1,6 +1,6 @@
 puzzle over = think about, ponder, contemplate
 mystery = puzzle, enigma, riddle
-monument  = landmark, structure, edifice
+monument = landmark, structure, edifice
 erect = construct, build, raise
 comprise of = include, make up of, compose of
 upright = standing or sitting in a straight/vertical position
