@@ -102,6 +102,32 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
 7. Xuất CSV đúng số cột, đúng thứ tự cột, không thêm cột ngoài quy định.
 8. Kiểm tra lại CSV trước khi hoàn tất.
 
+### 2.1 Workflow Khi Bổ Sung Từ Vựng Vào Danh Sách Đã Tạo
+
+Chỉ áp dụng mục này khi người dùng yêu cầu bổ sung thêm từ vựng vào một danh sách/file đã được tạo trước đó. Khi đó Agent không đánh số lại toàn bộ file và không tạo lại danh sách từ đầu, mà thực hiện theo thứ tự:
+
+1. Xác định file input tương ứng trong `/input` và hai file output tương ứng trong `/choice-question` và `/fill-the-blank`.
+2. Bổ sung từ vựng được yêu cầu vào cuối file input tương ứng theo đúng format:
+   ```text
+   word = meaning/synonyms
+   ```
+   Nếu người dùng cung cấp gợi ý trái nghĩa hoặc distractor, ghi sau ký tự `#` theo quy tắc input hiện có.
+3. Kiểm tra số thứ tự cuối cùng hiện có trong file Choice Question tương ứng.
+4. Kiểm tra số thứ tự cuối cùng hiện có trong file Fill The Blank tương ứng.
+5. Tạo đầy đủ bản ghi mới cho từ được bổ sung ở cả hai dạng:
+   - 1 bản ghi Choice Question.
+   - Ít nhất 1 bản ghi Fill The Blank.
+6. Đánh số cho bản ghi Choice Question mới theo quy tắc nối chuỗi từ số cuối cùng của danh sách Choice Question:
+   - Nếu số cuối cùng là `65-CAM18-TEST2-PASSAGE1`, số mới là `65+1-CAM18-TEST2-PASSAGE1`.
+   - Nếu số cuối cùng là `65+10-CAM18-TEST2-PASSAGE1`, số mới là `65+11-CAM18-TEST2-PASSAGE1`.
+   - Phần sau dấu `-` luôn giữ nguyên `INPUT_FILE_STEM`.
+   - Chỉ tăng phần số sau dấu `+` nếu số cuối cùng đã có dạng bổ sung.
+7. Đánh số cho bản ghi Fill The Blank mới bằng cách tiếp tục tăng số nguyên cuối cùng hiện có:
+   - Nếu số cuối cùng là `130-CAM18-TEST2-PASSAGE1`, số mới là `131-CAM18-TEST2-PASSAGE1`.
+   - Không dùng dạng nối chuỗi `+` cho Fill The Blank.
+8. Append bản ghi mới vào cuối các file CSV tương ứng, giữ nguyên các dòng đã có và không thay đổi số thứ tự cũ.
+9. Kiểm tra lại rằng từ mới đã xuất hiện đầy đủ trong file input, Choice Question, và Fill The Blank tương ứng.
+
 ---
 
 ## 3. Vocabulary Metadata Rules
@@ -591,6 +617,9 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - `answer` của Fill The Blank là lowercase.
 - Số thứ tự tăng dần và không trùng.
 - Fill The Blank tiếp tục số thứ tự sau Choice Question.
+- Khi bổ sung từ vào danh sách đã có, Choice Question mới dùng đúng dạng nối chuỗi `last+N-{INPUT_FILE_STEM}` theo số cuối cùng hiện có.
+- Khi bổ sung từ vào danh sách đã có, Fill The Blank mới tiếp tục tăng số nguyên từ số cuối cùng hiện có.
+- Khi bổ sung từ vào danh sách đã có, từ mới phải được append đầy đủ vào file input và cả hai file output tương ứng.
 - Mỗi từ có đúng 1 câu hỏi Choice Question (English Definition).
 - Mỗi câu hỏi chỉ có một đáp án đúng.
 - Distractor không trùng đáp án đúng và không gây nhập nhằng.
@@ -608,6 +637,9 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không dùng distractor khác loại từ nếu có lựa chọn tốt hơn.
 - Không bỏ qua IPA UK/US.
 - Không thêm header vào CSV mới nếu muốn nhất quán với các file hiện có.
+- Không đánh số lại toàn bộ file khi chỉ được yêu cầu bổ sung từ vựng vào danh sách đã tạo trước đó.
+- Không quên thêm từ mới vào file input tương ứng khi bổ sung từ vựng.
+- Không dùng kiểu đánh số `+` cho Fill The Blank khi bổ sung từ vựng.
 - Không ghi sai tên cột `answer` thành `answers` trong Fill The Blank.
 - Không bỏ sót cột `word`, `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese`, `image`, `example`, `eg-vie`, `synonym`, `opposite` trong Choice Question.
 - Không bỏ sót cột `type`, `ipa-uk`, `ipa-us`, `cerf`, `definition`, `vietnamese`, `image`, `example`, `eg-vie`, `synonym`, `opposite` trong Fill The Blank.
