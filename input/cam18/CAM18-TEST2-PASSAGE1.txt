@@ -82,3 +82,4 @@ eclipse = an event when one astronomical body blocks the light from another
 radioactive = having a nucleus that gives off radiation
 isotope = one of two or more forms of the same element with different atomic masses
 paleontology = the scientific study of fossils and ancient life forms
+fossil = the preserved remains or traces of an ancient plant or animal
