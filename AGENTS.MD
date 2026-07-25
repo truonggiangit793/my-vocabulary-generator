@@ -79,6 +79,7 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
 2. Chuẩn hóa danh sách từ:
    - Loại dòng trống.
    - Tách `word`, `meaning/synonyms`, và optional note sau `#`.
+   - Chuẩn hóa dạng nguyên mẫu theo quy tắc ở mục 2.1 trước khi tạo output.
    - Xác định loại từ chính: noun, verb, adjective, adverb, phrase, phrasal verb, idiom.
 3. Thu thập metadata cho từng từ:
    - Word display.
@@ -102,31 +103,45 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
 7. Xuất CSV đúng số cột, đúng thứ tự cột, không thêm cột ngoài quy định.
 8. Kiểm tra lại CSV trước khi hoàn tất.
 
-### 2.1 Workflow Khi Bổ Sung Từ Vựng Vào Danh Sách Đã Tạo
+### 2.1 Quy Tắc Chuẩn Hóa Nguyên Mẫu Trước Khi Tạo
+
+Áp dụng các quy tắc này trong bước chuẩn hóa danh sách từ, trước khi thu thập metadata và tạo CSV:
+
+- Nếu từ vựng là danh từ số nhiều có quy tắc, thường chỉ thêm `s` hoặc `es`, chuyển về dạng nguyên mẫu số ít trong file input tương ứng trước khi tạo danh sách.
+- Nếu từ vựng là danh từ số nhiều bất quy tắc, ví dụ `men` là số nhiều của `man`, `women` là số nhiều của `woman`, `knives` là số nhiều của `knife`, cần bổ sung từ gốc vào file input tương ứng trước khi tạo danh sách.
+- Với danh từ số nhiều bất quy tắc, English Definition phải giải thích rõ quan hệ giữa dạng số nhiều ban đầu và từ gốc, ví dụ nêu rằng `men` is the plural form of `man`.
+- Nếu từ vựng là động từ quá khứ có quy tắc được thêm `-ed`, chuyển về dạng nguyên mẫu trong file input tương ứng trước khi tạo danh sách.
+- Nếu từ vựng là động từ bất quy tắc, ví dụ `found` là quá khứ của `find`, cần bổ sung từ gốc vào file input tương ứng trước khi tạo danh sách.
+- Với động từ bất quy tắc, English Definition phải giải thích rõ quan hệ giữa dạng quá khứ ban đầu và từ gốc, ví dụ nêu rằng `found` can be the past tense of `find` khi đúng ngữ cảnh input.
+- Nếu từ vựng là tính từ dạng `-ed` hoặc `-ing`, ví dụ `interested`, `interesting`, giữ nguyên dạng từ trong file input và không chuyển về động từ gốc.
+- Khi một dạng biến đổi có thể thuộc nhiều loại từ hoặc nhiều nghĩa, Agent phải dựa vào nghĩa/gợi ý bên phải dấu `=` và ngữ cảnh IELTS để quyết định có chuyển về nguyên mẫu hay giữ nguyên.
+
+### 2.2 Workflow Khi Bổ Sung Từ Vựng Vào Danh Sách Đã Tạo
 
 Chỉ áp dụng mục này khi người dùng yêu cầu bổ sung thêm từ vựng vào một danh sách/file đã được tạo trước đó. Khi đó Agent không đánh số lại toàn bộ file và không tạo lại danh sách từ đầu, mà thực hiện theo thứ tự:
 
 1. Xác định file input tương ứng trong `/input` và hai file output tương ứng trong `/choice-question` và `/fill-the-blank`.
-2. Bổ sung từ vựng được yêu cầu vào cuối file input tương ứng theo đúng format:
+2. Áp dụng quy tắc chuẩn hóa nguyên mẫu ở mục 2.1 cho từ vựng được yêu cầu trước khi append vào file input.
+3. Bổ sung từ vựng được yêu cầu vào cuối file input tương ứng theo đúng format:
    ```text
    word = meaning/synonyms
    ```
    Nếu người dùng cung cấp gợi ý trái nghĩa hoặc distractor, ghi sau ký tự `#` theo quy tắc input hiện có.
-3. Kiểm tra số thứ tự cuối cùng hiện có trong file Choice Question tương ứng.
-4. Kiểm tra số thứ tự cuối cùng hiện có trong file Fill The Blank tương ứng.
-5. Tạo đầy đủ bản ghi mới cho từ được bổ sung ở cả hai dạng:
+4. Kiểm tra số thứ tự cuối cùng hiện có trong file Choice Question tương ứng.
+5. Kiểm tra số thứ tự cuối cùng hiện có trong file Fill The Blank tương ứng.
+6. Tạo đầy đủ bản ghi mới cho từ được bổ sung ở cả hai dạng:
    - 1 bản ghi Choice Question.
    - Ít nhất 1 bản ghi Fill The Blank.
-6. Đánh số cho bản ghi Choice Question mới theo quy tắc nối chuỗi từ số cuối cùng của danh sách Choice Question:
+7. Đánh số cho bản ghi Choice Question mới theo quy tắc nối chuỗi từ số cuối cùng của danh sách Choice Question:
    - Nếu số cuối cùng là `65-CAM18-TEST2-PASSAGE1`, số mới là `65+1-CAM18-TEST2-PASSAGE1`.
    - Nếu số cuối cùng là `65+10-CAM18-TEST2-PASSAGE1`, số mới là `65+11-CAM18-TEST2-PASSAGE1`.
    - Phần sau dấu `-` luôn giữ nguyên `INPUT_FILE_STEM`.
    - Chỉ tăng phần số sau dấu `+` nếu số cuối cùng đã có dạng bổ sung.
-7. Đánh số cho bản ghi Fill The Blank mới bằng cách tiếp tục tăng số nguyên cuối cùng hiện có:
+8. Đánh số cho bản ghi Fill The Blank mới bằng cách tiếp tục tăng số nguyên cuối cùng hiện có:
    - Nếu số cuối cùng là `130-CAM18-TEST2-PASSAGE1`, số mới là `131-CAM18-TEST2-PASSAGE1`.
    - Không dùng dạng nối chuỗi `+` cho Fill The Blank.
-8. Append bản ghi mới vào cuối các file CSV tương ứng, giữ nguyên các dòng đã có và không thay đổi số thứ tự cũ.
-9. Kiểm tra lại rằng từ mới đã xuất hiện đầy đủ trong file input, Choice Question, và Fill The Blank tương ứng.
+9. Append bản ghi mới vào cuối các file CSV tương ứng, giữ nguyên các dòng đã có và không thay đổi số thứ tự cũ.
+10. Kiểm tra lại rằng từ mới đã xuất hiện đầy đủ trong file input, Choice Question, và Fill The Blank tương ứng.
 
 ---
 
@@ -617,6 +632,10 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - `answer` của Fill The Blank là lowercase.
 - Số thứ tự tăng dần và không trùng.
 - Fill The Blank tiếp tục số thứ tự sau Choice Question.
+- Trước khi tạo output, danh từ số nhiều có quy tắc và động từ quá khứ có quy tắc đã được chuyển về dạng nguyên mẫu trong file input tương ứng.
+- Trước khi tạo output, danh từ số nhiều bất quy tắc và động từ bất quy tắc đã được bổ sung từ gốc vào file input tương ứng.
+- Definition của các từ gốc được bổ sung từ dạng bất quy tắc phải giải thích rõ quan hệ với dạng biến đổi ban đầu.
+- Tính từ dạng `-ed` hoặc `-ing` được giữ nguyên, không bị chuyển nhầm về động từ gốc.
 - Khi bổ sung từ vào danh sách đã có, Choice Question mới dùng đúng dạng nối chuỗi `last+N-{INPUT_FILE_STEM}` theo số cuối cùng hiện có.
 - Khi bổ sung từ vào danh sách đã có, Fill The Blank mới tiếp tục tăng số nguyên từ số cuối cùng hiện có.
 - Khi bổ sung từ vào danh sách đã có, từ mới phải được append đầy đủ vào file input và cả hai file output tương ứng.
@@ -637,6 +656,9 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không dùng distractor khác loại từ nếu có lựa chọn tốt hơn.
 - Không bỏ qua IPA UK/US.
 - Không thêm header vào CSV mới nếu muốn nhất quán với các file hiện có.
+- Không tạo bài trực tiếp từ danh từ số nhiều có quy tắc hoặc động từ quá khứ có quy tắc khi chúng cần được chuyển về nguyên mẫu trước.
+- Không bỏ qua việc bổ sung từ gốc cho danh từ số nhiều bất quy tắc hoặc động từ bất quy tắc.
+- Không chuyển tính từ dạng `-ed` hoặc `-ing` như `interested`, `interesting` về động từ gốc.
 - Không đánh số lại toàn bộ file khi chỉ được yêu cầu bổ sung từ vựng vào danh sách đã tạo trước đó.
 - Không quên thêm từ mới vào file input tương ứng khi bổ sung từ vựng.
 - Không dùng kiểu đánh số `+` cho Fill The Blank khi bổ sung từ vựng.
