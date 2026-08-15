@@ -1,11 +1,11 @@
-# IELTS Vocabulary CSV Generator Agent
+# IELTS Vocabulary Anki Text Generator Agent
 
-Tài liệu này là đặc tả bắt buộc cho Agent khi chuyển đổi danh sách từ vựng trong `/input` thành hai loại bài tập CSV:
+Tài liệu này là đặc tả bắt buộc cho Agent khi chuyển đổi danh sách từ vựng trong `/input` thành hai loại bài tập text tab-separated (TSV) để import vào Anki:
 
 - Choice Question: câu hỏi trắc nghiệm, lưu trong thư mục nhóm tương ứng dưới `/output`.
 - Fill The Blank: câu hỏi điền từ, lưu cùng thư mục nhóm với Choice Question tương ứng dưới `/output`.
 
-Agent phải ưu tiên độ chính xác ngữ nghĩa, tính nhất quán định dạng CSV, và khả năng import dữ liệu ổn định vào hệ thống học từ vựng.
+Agent phải ưu tiên độ chính xác ngữ nghĩa, tính nhất quán định dạng text tab-separated và khả năng import dữ liệu ổn định vào Anki.
 
 ---
 
@@ -24,7 +24,7 @@ Chứa quy tắc hoạt động, định dạng input, định dạng output, v�
 
 ### `input/`
 
-Chứa các file `.txt` đầu vào. Mỗi file tương ứng với một passage/test và sẽ tạo ra các file CSV cùng tên trong thư mục output.
+Chứa các file `.txt` đầu vào. Mỗi file tương ứng với một passage/test và sẽ tạo ra hai file `.txt` cùng stem trong thư mục output.
 
 Ví dụ file:
 
@@ -48,14 +48,14 @@ Quy tắc đọc mỗi dòng:
 
 ### `output/`
 
-Chứa toàn bộ CSV đầu ra, được nhóm theo thư mục con tương ứng với thư mục của file input. Mỗi thư mục nhóm chứa cả Choice Question và Fill The Blank.
+Chứa toàn bộ file text tab-separated đầu ra, được nhóm theo thư mục con tương ứng với thư mục của file input. Mỗi thư mục nhóm chứa cả Choice Question và Fill The Blank.
 
 Tên file Choice Question dùng tiền tố `CHOICE-`, còn file Fill The Blank dùng tiền tố `FILL-` trước stem của input:
 
 ```text
 input/cam20/CAM20-TEST1-PASSAGE1.txt
-output/cam20/CHOICE-CAM20-TEST1-PASSAGE1.csv
-output/cam20/FILL-CAM20-TEST1-PASSAGE1.csv
+output/cam20/CHOICE-CAM20-TEST1-PASSAGE1.txt
+output/cam20/FILL-CAM20-TEST1-PASSAGE1.txt
 ```
 
 ---
@@ -89,12 +89,12 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
 6. Đánh số liên tục:
    - Choice Question bắt đầu từ `1`.
    - Fill The Blank tiếp tục sau số cuối cùng của Choice Question.
-7. Xuất CSV đúng số cột, đúng thứ tự cột, không thêm cột ngoài quy định.
-8. Kiểm tra lại CSV trước khi hoàn tất.
+7. Xuất file `.txt` tab-separated đúng số cột, đúng thứ tự cột, không thêm cột ngoài quy định.
+8. Kiểm tra lại file text trước khi hoàn tất.
 
 ### 2.1 Quy Tắc Chuẩn Hóa Nguyên Mẫu Trước Khi Tạo
 
-Áp dụng các quy tắc này trong bước chuẩn hóa danh sách từ, trước khi thu thập metadata và tạo CSV:
+Áp dụng các quy tắc này trong bước chuẩn hóa danh sách từ, trước khi thu thập metadata và tạo file text đầu ra:
 
 - Nếu từ vựng là danh từ số nhiều có quy tắc, thường chỉ thêm `s` hoặc `es`, chuyển về dạng nguyên mẫu số ít trong file input tương ứng trước khi tạo danh sách.
 - Nếu từ vựng là danh từ số nhiều bất quy tắc, ví dụ `men` là số nhiều của `man`, `women` là số nhiều của `woman`, `knives` là số nhiều của `knife`, cần bổ sung từ gốc vào file input tương ứng trước khi tạo danh sách.
@@ -109,7 +109,7 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
 
 Chỉ áp dụng mục này khi người dùng yêu cầu bổ sung thêm từ vựng vào một danh sách/file đã được tạo trước đó. Khi đó Agent không đánh số lại toàn bộ file và không tạo lại danh sách từ đầu, mà thực hiện theo thứ tự:
 
-1. Xác định file input tương ứng trong `/input` và thư mục nhóm tương ứng trong `/output`; trong đó có file `CHOICE-{INPUT_FILE_STEM}.csv` và file `FILL-{INPUT_FILE_STEM}.csv`.
+1. Xác định file input tương ứng trong `/input` và thư mục nhóm tương ứng trong `/output`; trong đó có file `CHOICE-{INPUT_FILE_STEM}.txt` và file `FILL-{INPUT_FILE_STEM}.txt`.
 2. Áp dụng quy tắc chuẩn hóa nguyên mẫu ở mục 2.1 cho từ vựng được yêu cầu trước khi append vào file input.
 3. Bổ sung từ vựng được yêu cầu vào cuối file input tương ứng theo đúng format:
    ```text
@@ -129,7 +129,7 @@ Chỉ áp dụng mục này khi người dùng yêu cầu bổ sung thêm từ v
 8. Đánh số cho bản ghi Fill The Blank mới bằng cách tiếp tục tăng số nguyên cuối cùng hiện có:
    - Nếu số cuối cùng là `130-CAM18-TEST2-PASSAGE1`, số mới là `131-CAM18-TEST2-PASSAGE1`.
    - Không dùng dạng nối chuỗi `+` cho Fill The Blank.
-9. Append bản ghi mới vào cuối các file CSV tương ứng, giữ nguyên các dòng đã có và không thay đổi số thứ tự cũ.
+9. Append bản ghi mới vào cuối các file text tab-separated tương ứng, giữ nguyên các dòng đã có và không thay đổi số thứ tự cũ.
 10. Kiểm tra lại rằng từ mới đã xuất hiện đầy đủ trong file input, Choice Question, và Fill The Blank tương ứng.
 
 ---
@@ -196,18 +196,17 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 ---
 
-## 4. CSV Rules
+## 4. Anki Text (TSV) Rules
 
-### General CSV Requirements
+### General Text Requirements
 
-- File CSV không bắt buộc có header. Nếu tạo mới theo bộ dữ liệu hiện tại, không thêm header để nhất quán với các file đang có.
-- Mỗi record nằm trên một dòng CSV hợp lệ.
-- Dùng dấu phẩy `,` làm delimiter.
-- Nội dung chứa dấu phẩy hoặc dấu ngoặc kép nên được đặt trong dấu ngoặc kép `"..."`.
-- Nếu trong field có dấu ngoặc kép, escape bằng cách nhân đôi `""`.
+- File output phải có đuôi `.txt`, không bắt buộc có header. Khi tạo mới, không thêm header để nhất quán với các file hiện có.
+- Mỗi record nằm trên đúng một dòng text.
+- Dùng ký tự tab thực (`U+0009`, `\t`) làm delimiter giữa các cột; không dùng dấu phẩy làm delimiter.
+- Dấu phẩy và dấu ngoặc kép là nội dung thông thường trong field, không cần quote hoặc escape theo quy tắc CSV.
+- Không dùng ký tự tab hoặc line break bên trong một field. Nếu nội dung nguồn có tab hoặc xuống dòng, thay bằng một khoảng trắng trước khi xuất.
 - Không để thừa hoặc thiếu cột.
-- Không thêm Markdown trong CSV.
-- Không dùng line break bên trong một field CSV.
+- Không thêm Markdown trong file output.
 - Encoding: UTF-8.
 
 ---
@@ -216,8 +215,8 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 Mỗi record Choice Question phải có đúng 19 cột theo thứ tự:
 
-```csv
-number,question,a,b,c,d,answers,word,type,ipa-uk,ipa-us,cerf,definition,vietnamese,image,example,eg-vie,synonym,opposite
+```text
+number	question	a	b	c	d	answers	word	type	ipa-uk	ipa-us	cerf	definition	vietnamese	image	example	eg-vie	synonym	opposite
 ```
 
 ### 5.1 `number`
@@ -240,7 +239,7 @@ Quy tắc:
 
 - Bắt đầu từ `1` cho mỗi file input.
 - Tăng dần theo thứ tự record.
-- Unique trong cùng file CSV.
+- Unique trong cùng file text.
 - `INPUT_FILE_STEM` là tên file input không bao gồm `.txt`.
 
 ### 5.2 `question`
@@ -420,8 +419,8 @@ Quy tắc:
 
 Mỗi record Fill The Blank phải có đúng 14 cột theo thứ tự:
 
-```csv
-number,question,answer,type,ipa-uk,ipa-us,cerf,definition,vietnamese,image,example,eg-vie,synonym,opposite
+```text
+number	question	answer	type	ipa-uk	ipa-us	cerf	definition	vietnamese	image	example	eg-vie	synonym	opposite
 ```
 
 ### 6.1 `number`
@@ -598,14 +597,14 @@ Ví dụ input có 40 từ hợp lệ:
 
 ### Choice Question Row
 
-```csv
-1-CAM20-TEST1-PASSAGE1,"Active at night rather than during the day.",solitary,plentiful,nocturnal,unattended,c,nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm.",,"Many animals like owls are nocturnal and hunt at night.","Nhiều loài động vật như cú là loài hoạt động về đêm và săn mồi vào ban đêm.",night-active (hoạt động về đêm),daytime (ban ngày)
+```text
+1-CAM20-TEST1-PASSAGE1	Active at night rather than during the day.	solitary	plentiful	nocturnal	unattended	c	nocturnal	adjective	/nɒkˈtɜː.nəl/	/nɑːkˈtɝː.nəl/	B2	Active at night rather than during the day.	Hoạt động về đêm.		Many animals like owls are nocturnal and hunt at night.	Nhiều loài động vật như cú là loài hoạt động về đêm và săn mồi vào ban đêm.	night-active (hoạt động về đêm)	daytime (ban ngày)
 ```
 
 ### Fill The Blank Row
 
-```csv
-41-CAM20-TEST1-PASSAGE1,"Many animals that hunt after sunset are __.",nocturnal,adjective,/nɒkˈtɜː.nəl/,/nɑːkˈtɝː.nəl/,B2,"Active at night rather than during the day.","Hoạt động về đêm.",,,,
+```text
+41-CAM20-TEST1-PASSAGE1	Many animals that hunt after sunset are __.	nocturnal	adjective	/nɒkˈtɜː.nəl/	/nɑːkˈtɝː.nəl/	B2	Active at night rather than during the day.	Hoạt động về đêm.		Many animals like owls are nocturnal and hunt at night.	Nhiều loài động vật như cú là loài hoạt động về đêm và săn mồi vào ban đêm.	night-active (hoạt động về đêm)	daytime (ban ngày)
 ```
 
 ---
@@ -614,7 +613,7 @@ Ví dụ input có 40 từ hợp lệ:
 
 Trước khi kết thúc, Agent phải kiểm tra:
 
-- Mỗi file Choice Question có tên `CHOICE-{INPUT_FILE_STEM}.csv` và mỗi file Fill The Blank có tên `FILL-{INPUT_FILE_STEM}.csv`.
+- Mỗi file Choice Question có tên `CHOICE-{INPUT_FILE_STEM}.txt` và mỗi file Fill The Blank có tên `FILL-{INPUT_FILE_STEM}.txt`.
 - Choice Question có đúng 19 cột mỗi dòng.
 - Fill The Blank có đúng 14 cột mỗi dòng.
 - `answers` của Choice Question chỉ là `a`, `b`, `c`, hoặc `d`.
@@ -631,7 +630,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Mỗi từ có đúng 1 câu hỏi Choice Question (English Definition).
 - Mỗi câu hỏi chỉ có một đáp án đúng.
 - Distractor không trùng đáp án đúng và không gây nhập nhằng.
-- CSV được escape đúng với dấu ngoặc kép nếu có.
+- Mọi record được ngăn cách bằng line break, mọi field được ngăn cách bằng đúng một ký tự tab, và không field nào chứa tab hoặc line break.
 - Kiểm tra dấu chấm câu tương ứng theo yêu cầu.
 - Không có dòng rỗng ngoài ý muốn ở cuối file nếu hệ thống import không yêu cầu.
 
@@ -644,7 +643,8 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không để definition quá rộng khiến nhiều lựa chọn đều đúng.
 - Không dùng distractor khác loại từ nếu có lựa chọn tốt hơn.
 - Không bỏ qua IPA UK/US.
-- Không thêm header vào CSV mới nếu muốn nhất quán với các file hiện có.
+- Không thêm header vào file text mới nếu muốn nhất quán với các file hiện có.
+- Không xuất file `.csv`, dùng file `.txt` với ký tự tab thực làm delimiter.
 - Không tạo bài trực tiếp từ danh từ số nhiều có quy tắc hoặc động từ quá khứ có quy tắc khi chúng cần được chuyển về nguyên mẫu trước.
 - Không bỏ qua việc bổ sung từ gốc cho danh từ số nhiều bất quy tắc hoặc động từ bất quy tắc.
 - Không chuyển tính từ dạng `-ed` hoặc `-ing` như `interested`, `interesting` về động từ gốc.
