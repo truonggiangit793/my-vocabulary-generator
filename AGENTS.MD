@@ -16,6 +16,8 @@ Agent phải ưu tiên độ chính xác ngữ nghĩa, tính nhất quán địn
 ├── AGENTS.MD
 ├── input/
 └── output/
+├── images/
+└── tools/
 ```
 
 ### `AGENTS.MD`
@@ -77,7 +79,7 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
    - CEFR.
    - English definition.
    - Vietnamese meaning.
-   - Image URL (để trống).
+   - Image filename (để trống cho đến khi ảnh được kiểm tra theo quy tắc ở mục 4.1).
    - Example sentence (câu ví dụ tự nhiên, gần gũi, dùng được trong đời sống hàng ngày).
    - Vietnamese translation of the example sentence.
    - Synonym list (tìm các từ đồng nghĩa phù hợp, kèm nghĩa tiếng Việt).
@@ -208,6 +210,46 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 - Không để thừa hoặc thiếu cột.
 - Không thêm Markdown trong file output.
 - Encoding: UTF-8.
+
+### 4.1 Image Asset Requirements
+
+Ảnh là dữ liệu hỗ trợ ghi nhớ, không phải trường bắt buộc. Chỉ điền cột `image` khi một ảnh có thể minh hoạ **đúng nghĩa đang được kiểm tra**. Nếu không có ảnh phù hợp, để trống cột này ở cả Choice Question và Fill The Blank.
+
+#### Quy trình chọn ảnh
+
+1. Đọc `definition` trước, sau đó đối chiếu `vietnamese`, part of speech và example sentence để xác định đúng nghĩa.
+2. Không tìm ảnh chỉ dựa vào cách viết của từ. Với từ đa nghĩa, ảnh phải theo nghĩa trong bản ghi. Ví dụ, nếu definition của `bat` là dụng cụ đánh bóng thì ảnh phải là gậy bóng chày, không phải con dơi.
+3. Chỉ dùng ảnh cho danh từ/cụm danh từ cụ thể, sinh vật, đồ vật, địa điểm, bộ phận cơ thể, hiện tượng có thể quan sát, hoặc hành động có bối cảnh rõ ràng.
+4. Không dùng ảnh cho trạng từ, giới từ, cấu trúc ngữ pháp, thành ngữ, quan hệ trừu tượng, khái niệm đánh giá hoặc từ/cụm từ đa nghĩa mà không có một minh hoạ ổn định. Để trống trường ảnh trong các trường hợp này.
+5. Kiểm tra trực quan ảnh trước khi gắn vào TSV. Không chấp nhận ảnh chỉ liên quan lỏng lẻo qua tiêu đề, tag, hoặc một nghĩa khác của từ.
+
+#### Yêu cầu tệp ảnh
+
+- Định dạng bắt buộc: `.jpg` (JPEG).
+- Ưu tiên tỷ lệ 4:3. Có thể crop nhẹ để đạt 4:3 nếu vẫn giữ rõ chủ thể và nghĩa từ vựng.
+- Ảnh được lưu trực tiếp trong `/images`, không tạo thư mục con.
+- Tên tệp dùng lowercase kebab-case: `baseball-bat.jpg`, `coral-reef.jpg`. Giữ ký tự đặc biệt khi cần để khớp tên đã có trong TSV.
+- Cùng một nghĩa/từ phải dùng cùng một filename ở Choice và Fill. Không tạo hai ảnh khác nhau cho cùng bản ghi nếu không có lý do ngữ nghĩa rõ ràng.
+- Không dùng ảnh có watermark che chủ thể, chữ đáp án, hoặc nội dung gây hiểu nhầm.
+
+#### Kiểm tra sau khi cập nhật ảnh
+
+- Mỗi filename không rỗng trong TSV phải tồn tại trong `/images`.
+- Mỗi tệp được xoá phải đồng thời được làm trống ở mọi record còn tham chiếu đến nó.
+- Choice vẫn có 19 cột, Fill vẫn có 14 cột; chỉ trường `image` được phép thay đổi.
+- Rà ngẫu nhiên và rà bắt buộc mọi từ đa nghĩa/rủi ro cao (ví dụ homonym, polysemy, idiom) bằng definition trước khi hoàn tất.
+
+#### Tools hình ảnh dùng lại được
+
+Các script trong `/tools` không gắn với một bộ đề cụ thể. Luôn truyền thư mục nhóm output cần xử lý:
+
+```bash
+node tools/fetch_missing_images.mjs --output-dir output/<group> --image-dir images
+node tools/refresh_images_by_meaning.mjs --output-dir output/<group> --image-dir images
+node tools/remove_nonillustrable_images.mjs --output-dir output/<group> --image-dir images --rules tools/image-filter-rules.example.json
+```
+
+`refresh_images_by_meaning.mjs --retry` chỉ chạy lại các mục được ghi trong file lỗi của đúng group. `remove_nonillustrable_images.mjs --rules <file.json>` nhận một JSON gồm `types` và/hoặc `words`, vì vậy rule lọc ảnh có thể tuỳ chỉnh cho từng bộ từ vựng mà không sửa tool.
 
 ---
 
