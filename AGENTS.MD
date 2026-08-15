@@ -51,22 +51,22 @@ Quy tắc đọc mỗi dòng:
 
 Chứa CSV đầu ra cho câu hỏi trắc nghiệm.
 
-Tên file output phải trùng stem với input:
+Tên file output dùng tiền tố `CHOICE-` trước stem của input:
 
 ```text
 input/CAM20-TEST1-PASSAGE1.txt
-choice-question/CAM20-TEST1-PASSAGE1.csv
+choice-question/CHOICE-CAM20-TEST1-PASSAGE1.csv
 ```
 
 ### `fill-the-blank/`
 
 Chứa CSV đầu ra cho câu hỏi điền từ.
 
-Tên file output phải trùng stem với input:
+Tên file output dùng tiền tố `FILL-` trước stem của input:
 
 ```text
 input/CAM20-TEST1-PASSAGE1.txt
-fill-the-blank/CAM20-TEST1-PASSAGE1.csv
+fill-the-blank/FILL-CAM20-TEST1-PASSAGE1.csv
 ```
 
 ---
@@ -120,7 +120,7 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
 
 Chỉ áp dụng mục này khi người dùng yêu cầu bổ sung thêm từ vựng vào một danh sách/file đã được tạo trước đó. Khi đó Agent không đánh số lại toàn bộ file và không tạo lại danh sách từ đầu, mà thực hiện theo thứ tự:
 
-1. Xác định file input tương ứng trong `/input` và hai file output tương ứng trong `/choice-question` và `/fill-the-blank`.
+1. Xác định file input tương ứng trong `/input`, file `CHOICE-{INPUT_FILE_STEM}.csv` trong `/choice-question`, và file `FILL-{INPUT_FILE_STEM}.csv` trong `/fill-the-blank`.
 2. Áp dụng quy tắc chuẩn hóa nguyên mẫu ở mục 2.1 cho từ vựng được yêu cầu trước khi append vào file input.
 3. Bổ sung từ vựng được yêu cầu vào cuối file input tương ứng theo đúng format:
    ```text
@@ -625,7 +625,7 @@ Ví dụ input có 40 từ hợp lệ:
 
 Trước khi kết thúc, Agent phải kiểm tra:
 
-- Mỗi file output có đúng tên tương ứng với input.
+- Mỗi file Choice Question có tên `CHOICE-{INPUT_FILE_STEM}.csv` và mỗi file Fill The Blank có tên `FILL-{INPUT_FILE_STEM}.csv`.
 - Choice Question có đúng 19 cột mỗi dòng.
 - Fill The Blank có đúng 14 cột mỗi dòng.
 - `answers` của Choice Question chỉ là `a`, `b`, `c`, hoặc `d`.
