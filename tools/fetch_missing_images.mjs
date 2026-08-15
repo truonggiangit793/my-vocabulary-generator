@@ -9,6 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseImageToolOptions } from './image_tool_options.mjs';
+import { configuredSourceSummary, preferredCandidates } from './image_sources.mjs';
 
 const { root, outputDir, imageDir, reportPrefix } = parseImageToolOptions();
 const openverseApi = 'https://api.openverse.org/v1/images';
@@ -31,21 +32,25 @@ function fileName(word, used) {
   return name;
 }
 
-async function fetchJson(url) {
-  const response = await fetch(url, { headers: { 'User-Agent': 'anki-vocabulary-image-fetcher/1.0' } });
+async function fetchJson(url, extraHeaders = {}) {
+  const response = await fetch(url, { headers: { 'User-Agent': 'anki-vocabulary-image-fetcher/1.0', ...extraHeaders } });
   if (!response.ok) throw new Error(`API returned ${response.status}`);
   return response.json();
 }
 
 async function lookupImage(word) {
-  // Flickr has a reliable public image CDN and Openverse indexes only openly
-  // licensed material. It also prevents rapid requests to one Wikimedia host.
+  const select = candidates => candidates.find(item => item.width && item.height && item.width >= item.height) ?? candidates[0];
+  const preferred = await preferredCandidates(word, fetchJson);
+  if (preferred?.length) return select(preferred);
+
+  // Openverse/Flickr is used only when none of the configured preferred
+  // providers has a suitable result.
   const query = new URLSearchParams({ q: word, page_size: '5', source: 'flickr' });
   const data = await fetchJson(`${openverseApi}?${query}`);
   const candidates = (data.results ?? []).filter(item => item.url && /^https:\/\/live\.staticflickr\.com\//.test(item.url));
   // Prefer landscape images without requiring a fixed aspect ratio. Fall back
   // to another valid result when Openverse has no landscape candidate.
-  const image = candidates.find(item => item.width && item.height && item.width >= item.height) ?? candidates[0];
+  const image = select(candidates);
   return image ? {
     url: image.url,
     source: image.foreign_landing_url,
@@ -106,7 +111,7 @@ async function main() {
     }
   }
   for (const [word, name] of words) if (!name) words.set(word, fileName(word, used));
-  console.log(`Need images for ${words.size} unique vocabulary items.`);
+  console.log(`Need images for ${words.size} unique vocabulary items. Source order: ${configuredSourceSummary()}.`);
 
   const entries = [...words.entries()];
   const failures = [];
@@ -120,7 +125,7 @@ async function main() {
       try {
         try { if ((await stat(destination)).size >= 1024) { console.log(`[${index + 1}/${entries.length}] exists ${name}`); continue; } } catch {}
         const source = await lookupImage(word);
-        if (!source) throw new Error('no suitable Openverse/Flickr image result');
+        if (!source) throw new Error('no suitable image result from configured sources or Openverse/Flickr fallback');
         await downloadAsJpeg(source.url, destination);
         sources.push({ word, name, ...source });
         console.log(`[${index + 1}/${entries.length}] saved ${name}`);

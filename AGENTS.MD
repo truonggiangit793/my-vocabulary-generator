@@ -94,6 +94,16 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
 7. Xuất file `.txt` tab-separated đúng số cột, đúng thứ tự cột, không thêm cột ngoài quy định.
 8. Kiểm tra lại file text trước khi hoàn tất.
 
+### 2.3 Đồng Bộ Tools Khi Thay Đổi Yêu Cầu
+
+Mỗi khi người dùng chỉnh sửa một yêu cầu, Agent phải rà soát các script trong `/tools` trước khi thực hiện workflow tiếp theo:
+
+1. Xác định script nào chịu ảnh hưởng trực tiếp bởi yêu cầu mới.
+2. Cập nhật script, option, comment hoặc file cấu hình liên quan nếu cần để hành vi thực tế khớp với đặc tả mới.
+3. Không thay đổi tool không liên quan.
+4. Kiểm tra cú pháp và chạy kiểm tra an toàn, phù hợp với tool đã sửa, trước khi dùng tool đó trên dữ liệu thật.
+5. Báo cáo rõ tool nào đã được cập nhật, hoặc xác nhận không có tool nào cần đổi khi yêu cầu chỉ ảnh hưởng tài liệu/dữ liệu.
+
 ### 2.1 Quy Tắc Chuẩn Hóa Nguyên Mẫu Trước Khi Tạo
 
 Áp dụng các quy tắc này trong bước chuẩn hóa danh sách từ, trước khi thu thập metadata và tạo file text đầu ra:
@@ -214,6 +224,17 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 ### 4.1 Image Asset Requirements
 
 Ảnh là dữ liệu hỗ trợ ghi nhớ, không phải trường bắt buộc. Chỉ điền cột `image` khi một ảnh có thể minh hoạ **đúng nghĩa đang được kiểm tra**. Nếu không có ảnh phù hợp, để trống cột này ở cả Choice Question và Fill The Blank.
+
+#### Nguồn ảnh ưu tiên
+
+Khi tìm ảnh, ưu tiên nguồn theo thứ tự sau:
+
+1. `unsplash.com`
+2. `pinterest.com`
+3. `pexels.com`
+4. `pixabay.com`
+
+Nếu nhiều ảnh đều minh hoạ chính xác nghĩa từ vựng, chọn ảnh từ nguồn có thứ tự ưu tiên cao hơn. Chỉ dùng nguồn khác khi bốn nguồn trên không có ảnh phù hợp; dù lấy từ nguồn nào, vẫn phải kiểm tra trực quan ảnh theo các quy tắc bên dưới trước khi gắn vào TSV.
 
 #### Quy trình chọn ảnh
 

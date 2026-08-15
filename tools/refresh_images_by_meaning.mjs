@@ -1,18 +1,21 @@
 #!/usr/bin/env node
 
 // Replaces images using the English definition as part of the search
-// intent. Results are open-licensed Flickr images indexed by Openverse. The
-// selector prefers a landscape image while retaining a semantic title/tag
-// match to the word and its definition. It does not require a fixed ratio.
+// intent. Preferred providers are tried in the configured source order before
+// Openverse/Flickr. The selector prefers a landscape image while retaining a
+// semantic title/tag match to the word and its definition.
 
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseImageToolOptions } from './image_tool_options.mjs';
+import { configuredSourceSummary, preferredCandidates } from './image_sources.mjs';
 
 const { root, outputDir, imageDir, retry, reportPrefix } = parseImageToolOptions({ allowRetry: true });
 const api = 'https://api.openverse.org/v1/images';
-const concurrency = 3;
+const concurrency = 1;
+const apiRequestIntervalMs = 1_100;
+let nextApiRequestAt = 0;
 const stopWords = new Set('a an the to of in on at for from with and or by as is are be being been this that these those it its one someone something which who whose when where while than rather very more most less least only usually normally mainly mostly quite way degree state type kind person animal thing area place time use take make have has had do does did'.split(' '));
 
 function rowsFrom(content) {
@@ -31,16 +34,26 @@ function queryFor(entry) {
   return [...wordTerms, ...definitionTerms.slice(0, 4)].join(' ');
 }
 
-async function fetchJson(url) {
-  const response = await fetch(url, { headers: { 'User-Agent': 'anki-vocabulary-image-refresh/1.0' } });
-  if (!response.ok) throw new Error(`API returned ${response.status}`);
-  return response.json();
+async function fetchJson(url, extraHeaders = {}) {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const waitMs = Math.max(0, nextApiRequestAt - Date.now());
+    if (waitMs) await new Promise(resolve => setTimeout(resolve, waitMs));
+    nextApiRequestAt = Date.now() + apiRequestIntervalMs;
+    const response = await fetch(url, { headers: { 'User-Agent': 'anki-vocabulary-image-refresh/1.0', ...extraHeaders } });
+    if (response.ok) return response.json();
+    if (response.status !== 429 || attempt === 3) throw new Error(`API returned ${response.status}`);
+    const retryAfterSeconds = Number(response.headers.get('retry-after'));
+    const retryDelayMs = Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+      ? retryAfterSeconds * 1_000
+      : 15_000 * (attempt + 1);
+    await new Promise(resolve => setTimeout(resolve, retryDelayMs));
+  }
 }
 
 function candidateScore(candidate, entry) {
   const target = new Set([...tokens(entry.word), ...tokens(entry.definition)]);
   const title = tokens(candidate.title);
-  const tags = (candidate.tags ?? []).flatMap(tag => tokens(tag.name));
+  const tags = (candidate.tags ?? []).flatMap(tag => tokens(typeof tag === 'string' ? tag : tag.name));
   const wordTerms = new Set(tokens(entry.word));
   const overlap = (values, source, weight) => values.reduce((score, value) => score + (source.has(value) ? weight : 0), 0);
   const exactWord = overlap(title, wordTerms, 14) + overlap(tags, wordTerms, 8);
@@ -60,6 +73,10 @@ async function lookupImage(entry) {
     return data.results ?? [];
   };
   const semanticQuery = queryFor(entry);
+  let preferred = await preferredCandidates(semanticQuery, fetchJson);
+  if (!preferred?.length && semanticQuery !== entry.word) preferred = await preferredCandidates(entry.word, fetchJson);
+  if (preferred?.length) return preferred.sort((left, right) => candidateScore(right, entry) - candidateScore(left, entry));
+
   let candidates = await runQuery(semanticQuery);
   if (!candidates.length && semanticQuery !== entry.word) candidates = await runQuery(entry.word);
   const valid = candidates.filter(item => item.url && /^https:\/\/live\.staticflickr\.com\//.test(item.url) && item.width && item.height);
@@ -94,8 +111,7 @@ async function main() {
     const rows = rowsFrom(await readFile(path.join(outputDir, name), 'utf8'));
     for (const row of rows) {
       if (row.length !== 19) throw new Error(`${name} has a row with ${row.length} columns`);
-      if (!row[14]) throw new Error(`${name} still has an empty image field for ${row[7]}`);
-      if (!entriesByFile.has(row[14])) entriesByFile.set(row[14], {
+      if (row[14] && !entriesByFile.has(row[14])) entriesByFile.set(row[14], {
         fileName: row[14], word: row[7], type: row[8], definition: row[12], vietnamese: row[13],
       });
     }
@@ -106,8 +122,7 @@ async function main() {
     const rows = rowsFrom(await readFile(path.join(outputDir, fillName), 'utf8'));
     for (const row of rows) {
       if (row.length !== 14) throw new Error(`${fillName} has a row with ${row.length} columns`);
-      if (!row[9]) throw new Error(`${fillName} still has an empty image field for ${row[2]}`);
-      if (!entriesByFile.has(row[9])) entriesByFile.set(row[9], {
+      if (row[9] && !entriesByFile.has(row[9])) entriesByFile.set(row[9], {
         fileName: row[9], word: row[2], type: row[3], definition: row[7], vietnamese: row[8],
       });
     }
@@ -119,7 +134,7 @@ async function main() {
     const failedNames = new Set((await readFile(failedPath, 'utf8')).split(/\r?\n/).filter(Boolean).map(line => line.split('\t')[0]));
     entries = entries.filter(entry => failedNames.has(entry.fileName));
   }
-  console.log(`Refreshing ${entries.length} images using definitions and a landscape preference.`);
+  console.log(`Refreshing ${entries.length} images using definitions, a landscape preference, and source order: ${configuredSourceSummary()}.`);
   const failures = [];
   let next = 0;
   async function worker() {
