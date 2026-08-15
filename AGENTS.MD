@@ -226,7 +226,7 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 #### Yêu cầu tệp ảnh
 
 - Định dạng bắt buộc: `.jpg` (JPEG).
-- Ưu tiên tỷ lệ 4:3. Có thể crop nhẹ để đạt 4:3 nếu vẫn giữ rõ chủ thể và nghĩa từ vựng.
+- Không bắt buộc tỷ lệ 4:3 và không cần crop ảnh để đạt tỷ lệ này. Ưu tiên ảnh có định hướng chiều ngang, đặc biệt là ảnh có khung hình gần với hoặc ngang hơn tỷ lệ 4:3, miễn vẫn thể hiện rõ chủ thể và đúng nghĩa từ vựng.
 - Ảnh được lưu trực tiếp trong `/images`, không tạo thư mục con.
 - Tên tệp dùng lowercase kebab-case: `baseball-bat.jpg`, `coral-reef.jpg`. Giữ ký tự đặc biệt khi cần để khớp tên đã có trong TSV.
 - Cùng một nghĩa/từ phải dùng cùng một filename ở Choice và Fill. Không tạo hai ảnh khác nhau cho cùng bản ghi nếu không có lý do ngữ nghĩa rõ ràng.

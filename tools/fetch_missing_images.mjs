@@ -42,7 +42,10 @@ async function lookupImage(word) {
   // licensed material. It also prevents rapid requests to one Wikimedia host.
   const query = new URLSearchParams({ q: word, page_size: '5', source: 'flickr' });
   const data = await fetchJson(`${openverseApi}?${query}`);
-  const image = data.results?.find(item => item.url && /^https:\/\/live\.staticflickr\.com\//.test(item.url));
+  const candidates = (data.results ?? []).filter(item => item.url && /^https:\/\/live\.staticflickr\.com\//.test(item.url));
+  // Prefer landscape images without requiring a fixed aspect ratio. Fall back
+  // to another valid result when Openverse has no landscape candidate.
+  const image = candidates.find(item => item.width && item.height && item.width >= item.height) ?? candidates[0];
   return image ? {
     url: image.url,
     source: image.foreign_landing_url,

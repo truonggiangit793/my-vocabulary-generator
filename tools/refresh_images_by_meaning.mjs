@@ -2,8 +2,8 @@
 
 // Replaces images using the English definition as part of the search
 // intent. Results are open-licensed Flickr images indexed by Openverse. The
-// selector strongly prefers a native 4:3 image while retaining a semantic
-// title/tag match to the word and its definition.
+// selector prefers a landscape image while retaining a semantic title/tag
+// match to the word and its definition. It does not require a fixed ratio.
 
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
@@ -46,10 +46,11 @@ function candidateScore(candidate, entry) {
   const exactWord = overlap(title, wordTerms, 14) + overlap(tags, wordTerms, 8);
   const meaning = overlap(title, target, 3) + overlap(tags, target, 2);
   const ratio = candidate.width && candidate.height ? candidate.width / candidate.height : 0;
-  // Native 4:3 is deliberately weighted more highly than resolution alone.
-  const aspect = Math.max(0, 18 - Math.abs(ratio - 4 / 3) * 36);
+  // Prefer landscape images, but do not require or target a particular ratio.
+  // Portrait images remain eligible when their semantic match is stronger.
+  const orientation = ratio >= 1 ? 12 : Math.max(0, 4 - (1 - ratio) * 8);
   const resolution = Math.min(4, Math.log10(Math.max(1, (candidate.width ?? 0) * (candidate.height ?? 0))) - 4);
-  return exactWord + meaning + aspect + resolution;
+  return exactWord + meaning + orientation + resolution;
 }
 
 async function lookupImage(entry) {
@@ -118,7 +119,7 @@ async function main() {
     const failedNames = new Set((await readFile(failedPath, 'utf8')).split(/\r?\n/).filter(Boolean).map(line => line.split('\t')[0]));
     entries = entries.filter(entry => failedNames.has(entry.fileName));
   }
-  console.log(`Refreshing ${entries.length} images using definitions and 4:3 preference.`);
+  console.log(`Refreshing ${entries.length} images using definitions and a landscape preference.`);
   const failures = [];
   let next = 0;
   async function worker() {
