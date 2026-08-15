@@ -2,8 +2,8 @@
 
 Tài liệu này là đặc tả bắt buộc cho Agent khi chuyển đổi danh sách từ vựng trong `/input` thành hai loại bài tập CSV:
 
-- Choice Question: câu hỏi trắc nghiệm, lưu trong `/choice-question`.
-- Fill The Blank: câu hỏi điền từ, lưu trong `/fill-the-blank`.
+- Choice Question: câu hỏi trắc nghiệm, lưu trong thư mục nhóm tương ứng dưới `/output`.
+- Fill The Blank: câu hỏi điền từ, lưu cùng thư mục nhóm với Choice Question tương ứng dưới `/output`.
 
 Agent phải ưu tiên độ chính xác ngữ nghĩa, tính nhất quán định dạng CSV, và khả năng import dữ liệu ổn định vào hệ thống học từ vựng.
 
@@ -15,8 +15,7 @@ Agent phải ưu tiên độ chính xác ngữ nghĩa, tính nhất quán địn
 .
 ├── AGENTS.MD
 ├── input/
-├── choice-question/
-└── fill-the-blank/
+└── output/
 ```
 
 ### `AGENTS.MD`
@@ -47,26 +46,16 @@ Quy tắc đọc mỗi dòng:
 - Giữ nguyên chính tả đặc biệt của từ gốc nếu có, ví dụ `kākāpō`, `forest-dwelling`.
 - Nếu một từ lặp lại trong cùng file input, chỉ tạo một bộ câu hỏi cho lần xuất hiện đầu tiên, trừ khi ngữ nghĩa khác rõ ràng.
 
-### `choice-question/`
+### `output/`
 
-Chứa CSV đầu ra cho câu hỏi trắc nghiệm.
+Chứa toàn bộ CSV đầu ra, được nhóm theo thư mục con tương ứng với thư mục của file input. Mỗi thư mục nhóm chứa cả Choice Question và Fill The Blank.
 
-Tên file output dùng tiền tố `CHOICE-` trước stem của input:
-
-```text
-input/CAM20-TEST1-PASSAGE1.txt
-choice-question/CHOICE-CAM20-TEST1-PASSAGE1.csv
-```
-
-### `fill-the-blank/`
-
-Chứa CSV đầu ra cho câu hỏi điền từ.
-
-Tên file output dùng tiền tố `FILL-` trước stem của input:
+Tên file Choice Question dùng tiền tố `CHOICE-`, còn file Fill The Blank dùng tiền tố `FILL-` trước stem của input:
 
 ```text
-input/CAM20-TEST1-PASSAGE1.txt
-fill-the-blank/FILL-CAM20-TEST1-PASSAGE1.csv
+input/cam20/CAM20-TEST1-PASSAGE1.txt
+output/cam20/CHOICE-CAM20-TEST1-PASSAGE1.csv
+output/cam20/FILL-CAM20-TEST1-PASSAGE1.csv
 ```
 
 ---
@@ -120,7 +109,7 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
 
 Chỉ áp dụng mục này khi người dùng yêu cầu bổ sung thêm từ vựng vào một danh sách/file đã được tạo trước đó. Khi đó Agent không đánh số lại toàn bộ file và không tạo lại danh sách từ đầu, mà thực hiện theo thứ tự:
 
-1. Xác định file input tương ứng trong `/input`, file `CHOICE-{INPUT_FILE_STEM}.csv` trong `/choice-question`, và file `FILL-{INPUT_FILE_STEM}.csv` trong `/fill-the-blank`.
+1. Xác định file input tương ứng trong `/input` và thư mục nhóm tương ứng trong `/output`; trong đó có file `CHOICE-{INPUT_FILE_STEM}.csv` và file `FILL-{INPUT_FILE_STEM}.csv`.
 2. Áp dụng quy tắc chuẩn hóa nguyên mẫu ở mục 2.1 cho từ vựng được yêu cầu trước khi append vào file input.
 3. Bổ sung từ vựng được yêu cầu vào cuối file input tương ứng theo đúng format:
    ```text
