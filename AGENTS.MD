@@ -15,7 +15,7 @@ Agent phải ưu tiên độ chính xác ngữ nghĩa, tính nhất quán địn
 .
 ├── AGENTS.MD
 ├── input/
-└── output/
+├── output/
 ├── images/
 └── tools/
 ```
@@ -89,20 +89,10 @@ Với mỗi file trong `/input`, Agent thực hiện theo thứ tự:
 5. Tạo Fill The Blank:
    - Mỗi từ tạo ít nhất 1 câu điền từ.
 6. Đánh số liên tục:
-   - Choice Question bắt đầu từ `1`.
-   - Fill The Blank tiếp tục sau số cuối cùng của Choice Question.
+   - Khi tạo output mới, Choice Question bắt đầu từ `1` và Fill The Blank tiếp tục sau số cuối cùng của Choice Question.
+   - Khi bổ sung vào danh sách đã tạo, áp dụng quy tắc đánh số riêng tại mục 2.2; không đánh số lại các record cũ.
 7. Xuất file `.txt` tab-separated đúng số cột, đúng thứ tự cột, không thêm cột ngoài quy định.
 8. Kiểm tra lại file text trước khi hoàn tất.
-
-### 2.3 Đồng Bộ Tools Khi Thay Đổi Yêu Cầu
-
-Mỗi khi người dùng chỉnh sửa một yêu cầu, Agent phải rà soát các script trong `/tools` trước khi thực hiện workflow tiếp theo:
-
-1. Xác định script nào chịu ảnh hưởng trực tiếp bởi yêu cầu mới.
-2. Cập nhật script, option, comment hoặc file cấu hình liên quan nếu cần để hành vi thực tế khớp với đặc tả mới.
-3. Không thay đổi tool không liên quan.
-4. Kiểm tra cú pháp và chạy kiểm tra an toàn, phù hợp với tool đã sửa, trước khi dùng tool đó trên dữ liệu thật.
-5. Báo cáo rõ tool nào đã được cập nhật, hoặc xác nhận không có tool nào cần đổi khi yêu cầu chỉ ảnh hưởng tài liệu/dữ liệu.
 
 ### 2.1 Quy Tắc Chuẩn Hóa Nguyên Mẫu Trước Khi Tạo
 
@@ -143,6 +133,16 @@ Chỉ áp dụng mục này khi người dùng yêu cầu bổ sung thêm từ v
    - Không dùng dạng nối chuỗi `+` cho Fill The Blank.
 9. Append bản ghi mới vào cuối các file text tab-separated tương ứng, giữ nguyên các dòng đã có và không thay đổi số thứ tự cũ.
 10. Kiểm tra lại rằng từ mới đã xuất hiện đầy đủ trong file input, Choice Question, và Fill The Blank tương ứng.
+
+### 2.3 Đồng Bộ Tools Khi Thay Đổi Yêu Cầu
+
+Mỗi khi người dùng chỉnh sửa một yêu cầu, Agent phải rà soát các script trong `/tools` trước khi thực hiện workflow tiếp theo:
+
+1. Xác định script nào chịu ảnh hưởng trực tiếp bởi yêu cầu mới.
+2. Cập nhật script, option, comment hoặc file cấu hình liên quan nếu cần để hành vi thực tế khớp với đặc tả mới.
+3. Không thay đổi tool không liên quan.
+4. Kiểm tra cú pháp và chạy kiểm tra an toàn, phù hợp với tool đã sửa, trước khi dùng tool đó trên dữ liệu thật.
+5. Báo cáo rõ tool nào đã được cập nhật, hoặc xác nhận không có tool nào cần đổi khi yêu cầu chỉ ảnh hưởng tài liệu/dữ liệu.
 
 ---
 
@@ -212,7 +212,9 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 ### General Text Requirements
 
-- File output phải có đuôi `.txt`, không bắt buộc có header. Khi tạo mới, không thêm header để nhất quán với các file hiện có.
+- Dữ liệu file output bắt buộc phải là TSV (Tab-Separated Values) và dùng đuôi `.txt`, tương tự các file Cam19 và Cam20. Không tạo hoặc duy trì output ở định dạng `.csv` hay định dạng khác.
+- Nếu file output đã tồn tại trước đó ở định dạng khác, bắt buộc chuyển đổi file đó về TSV `.txt` trước khi tiếp tục xử lý. Việc chuyển đổi phải giữ nguyên toàn bộ nội dung dữ liệu, số record, thứ tự cột và format các cột theo quy định; chỉ thay đổi định dạng lưu trữ/delimiter cần thiết và phần mở rộng sang `.txt`, không chỉnh sửa nội dung bất kỳ field nào.
+- File output `.txt` không bắt buộc có header. Khi tạo mới, không thêm header để nhất quán với các file hiện có.
 - Mỗi record nằm trên đúng một dòng text.
 - Dùng ký tự tab thực (`U+0009`, `\t`) làm delimiter giữa các cột; không dùng dấu phẩy làm delimiter.
 - Dấu phẩy và dấu ngoặc kép là nội dung thông thường trong field, không cần quote hoặc escape theo quy tắc CSV.
@@ -225,39 +227,53 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 Ảnh là dữ liệu hỗ trợ ghi nhớ, không phải trường bắt buộc. Chỉ điền cột `image` khi một ảnh có thể minh hoạ **đúng nghĩa đang được kiểm tra**. Nếu không có ảnh phù hợp, để trống cột này ở cả Choice Question và Fill The Blank.
 
+### 4.1.1 Quy trình hình ảnh khi tạo mới hoặc cập nhật output
+
+Áp dụng quy trình này khi người dùng yêu cầu tạo dữ liệu output mới hoặc cập nhật hình ảnh cho output đã có. Với output mới, thực hiện quy trình từ đầu cho từng record; với output đã có, bắt đầu bằng việc kiểm tra giá trị hiện tại trong cột `image`:
+
+Trước khi xử lý từng record, xác định record đó có thể minh hoạ ổn định theo mục Quy trình chọn ảnh hay không. Với cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng, để trống `image` và bỏ qua toàn bộ bước Remote URL, tái sử dụng ảnh và tìm ảnh mới.
+
+1. Kiểm tra tuần tự các record và cột `image` từ trên xuống dưới. Nếu cột `image` đang chứa Remote URL hợp lệ (`http://` hoặc `https://`), tải ảnh trực tiếp từ liên kết đó về `/images`, chuyển/chuẩn hoá thành JPEG `.jpg`, đặt tên file theo quy định và thay Remote URL trong output bằng tên file cục bộ.
+2. Nếu từ vựng chưa có hình ảnh, chỉ kiểm tra các file output khác để tìm tên file ảnh dạng Local trước khi tìm ảnh mới. Chỉ tái sử dụng ảnh khi đồng thời trùng **từ vựng** và **nghĩa** (đối chiếu cả `definition`, và khi cần cả `vietnamese`/ngữ cảnh); không cần kiểm tra file vật lý tương ứng trong `/images` vì đây chỉ là thư mục tạm.
+3. Nếu không có record trùng cả từ và nghĩa, hoặc record trùng nhưng chưa có tên file ảnh dạng Local, tìm và tải ảnh mới theo các bước kiểm tra nghĩa và tìm kiếm Internet bên dưới.
+4. Nếu trùng từ vựng nhưng khác nghĩa, không được dùng lại ảnh cũ. Phải tải ảnh mới phù hợp với nghĩa mới và gắn index tuần tự vào tên file để phân biệt, ví dụ `hinh-anh.jpg`, `hinh-anh-2.jpg`, `hinh-anh-3.jpg`.
+5. Khi xử lý một từ vựng, phải thực hiện lần lượt: xem nghĩa của từ; kiểm tra các output khác để tái sử dụng ảnh đúng từ + đúng nghĩa; nếu không có thì xem `definition` và ngữ cảnh để tìm ảnh mới trên Internet; xem trước và phân tích kỹ ảnh để xác nhận chủ thể, hành động hoặc bối cảnh trong ảnh phù hợp với nghĩa đang kiểm tra; cuối cùng mới tải, lưu và cập nhật output.
+6. Ảnh tải về bắt buộc là JPEG có đuôi `.jpg`, ưu tiên khung hình chiều ngang và có tỷ lệ tương đối thuộc một trong các tỷ lệ `3:4`, `3:2` hoặc `16:9`. Không gắn ảnh chỉ dựa trên tiêu đề, tag hoặc URL nếu chưa kiểm tra trực quan và đối chiếu nghĩa.
+
 #### Nguồn ảnh ưu tiên
 
 Khi tìm ảnh, ưu tiên nguồn theo thứ tự sau:
 
-1. `unsplash.com`
-2. `pinterest.com`
-3. `pexels.com`
-4. `pixabay.com`
+1. Google Search / Google Images.
+2. `unsplash.com`
+3. `pinterest.com`
+4. `pexels.com`
+5. `pixabay.com`
+6. Openverse / Flickr, chỉ dùng làm fallback cuối cùng khi các nguồn trên không có ảnh phù hợp.
 
-Nếu nhiều ảnh đều minh hoạ chính xác nghĩa từ vựng, chọn ảnh từ nguồn có thứ tự ưu tiên cao hơn. Chỉ dùng nguồn khác khi bốn nguồn trên không có ảnh phù hợp; dù lấy từ nguồn nào, vẫn phải kiểm tra trực quan ảnh theo các quy tắc bên dưới trước khi gắn vào TSV.
+Sau khi đã xử lý Remote URL và kiểm tra khả năng tái sử dụng tên file Local từ các output khác, nếu cần tìm ảnh mới thì luôn tìm từ Google Search / Google Images trước vì kết quả đa dạng và có khả năng phù hợp với ngữ cảnh hơn. Phải lọc, xem trước và phân tích các hình ảnh tìm được từ Google Search để chọn ảnh minh hoạ chính xác cho nghĩa đang kiểm tra. Chỉ dùng các nguồn khác theo thứ tự trên khi Google Search không có ảnh phù hợp; dù lấy từ nguồn nào, vẫn phải kiểm tra trực quan ảnh theo các quy tắc bên dưới trước khi gắn vào TSV.
 
 #### Quy trình chọn ảnh
 
 1. Đọc `definition` trước, sau đó đối chiếu `vietnamese`, part of speech và example sentence để xác định đúng nghĩa.
 2. Không tìm ảnh chỉ dựa vào cách viết của từ. Với từ đa nghĩa, ảnh phải theo nghĩa trong bản ghi. Ví dụ, nếu definition của `bat` là dụng cụ đánh bóng thì ảnh phải là gậy bóng chày, không phải con dơi.
 3. Chỉ dùng ảnh cho danh từ/cụm danh từ cụ thể, sinh vật, đồ vật, địa điểm, bộ phận cơ thể, hiện tượng có thể quan sát, hoặc hành động có bối cảnh rõ ràng.
-4. Không dùng ảnh cho trạng từ, giới từ, cấu trúc ngữ pháp, thành ngữ, quan hệ trừu tượng, khái niệm đánh giá hoặc từ/cụm từ đa nghĩa mà không có một minh hoạ ổn định. Để trống trường ảnh trong các trường hợp này.
-5. Kiểm tra trực quan ảnh trước khi gắn vào TSV. Không chấp nhận ảnh chỉ liên quan lỏng lẻo qua tiêu đề, tag, hoặc một nghĩa khác của từ.
+4. Không dùng ảnh cho trạng từ, giới từ, cấu trúc ngữ pháp, thành ngữ mang ý nghĩa trừu tượng, quan hệ trừu tượng, khái niệm đánh giá hoặc cụm từ dài khoảng 3 từ trở lên mang ý nghĩa trừu tượng. Để trống trường ảnh trong các trường hợp này. Với từ/cụm từ đa nghĩa mà không có một minh hoạ ổn định, cũng để trống trường ảnh.
+5. Với kết quả từ Google Search, lọc các ảnh theo nghĩa, `definition`, part of speech và ngữ cảnh; xem trước và phân tích kỹ từng ứng viên phù hợp trước khi chọn ảnh. Không chấp nhận ảnh chỉ liên quan lỏng lẻo qua tiêu đề, tag, hoặc một nghĩa khác của từ.
 
 #### Yêu cầu tệp ảnh
 
-- Định dạng bắt buộc: `.jpg` (JPEG).
-- Không bắt buộc tỷ lệ 4:3 và không cần crop ảnh để đạt tỷ lệ này. Ưu tiên ảnh có định hướng chiều ngang, đặc biệt là ảnh có khung hình gần với hoặc ngang hơn tỷ lệ 4:3, miễn vẫn thể hiện rõ chủ thể và đúng nghĩa từ vựng.
-- Ảnh được lưu trực tiếp trong `/images`, không tạo thư mục con.
-- Tên tệp dùng lowercase kebab-case: `baseball-bat.jpg`, `coral-reef.jpg`. Giữ ký tự đặc biệt khi cần để khớp tên đã có trong TSV.
+- Định dạng bắt buộc: `.jpg` (JPEG). Tỷ lệ khung hình tương đối phải là `3:4`, `3:2` hoặc `16:9`; ưu tiên ảnh có chiều ngang.
+- Ảnh được lưu trực tiếp trong thư mục tạm `/images`, không tạo thư mục con.
+- Tên tệp dùng lowercase kebab-case: `baseball-bat.jpg`, `coral-reef.jpg`. Khi cùng từ vựng có nhiều nghĩa, thêm index tuần tự như `baseball-bat-2.jpg`. Giữ ký tự đặc biệt khi cần để khớp tên đã có trong TSV.
 - Cùng một nghĩa/từ phải dùng cùng một filename ở Choice và Fill. Không tạo hai ảnh khác nhau cho cùng bản ghi nếu không có lý do ngữ nghĩa rõ ràng.
 - Không dùng ảnh có watermark che chủ thể, chữ đáp án, hoặc nội dung gây hiểu nhầm.
 
-#### Kiểm tra sau khi cập nhật ảnh
+#### Kiểm tra sau khi xử lý ảnh
 
-- Mỗi filename không rỗng trong TSV phải tồn tại trong `/images`.
-- Mỗi tệp được xoá phải đồng thời được làm trống ở mọi record còn tham chiếu đến nó.
-- Choice vẫn có 19 cột, Fill vẫn có 14 cột; chỉ trường `image` được phép thay đổi.
+- Mỗi giá trị `image` không rỗng trong TSV phải là tên file ảnh dạng Local, không phải Remote URL. Không bắt buộc kiểm tra file vật lý tương ứng trong `/images` vì `/images` chỉ là thư mục tạm.
+- Nếu tên file ảnh bị xoá hoặc thay thế khỏi dữ liệu output, phải làm trống hoặc cập nhật mọi record còn tham chiếu đến tên file đó.
+- Khi chỉ cập nhật hình ảnh cho output đã có, Choice vẫn có 19 cột và Fill vẫn có 14 cột; chỉ trường `image` được phép thay đổi. Quy tắc này không hạn chế việc tạo đầy đủ các field khi tạo output mới.
 - Rà ngẫu nhiên và rà bắt buộc mọi từ đa nghĩa/rủi ro cao (ví dụ homonym, polysemy, idiom) bằng definition trước khi hoàn tất.
 
 #### Tools hình ảnh dùng lại được
@@ -272,6 +288,8 @@ node tools/remove_nonillustrable_images.mjs --output-dir output/<group> --image-
 
 `refresh_images_by_meaning.mjs --retry` chỉ chạy lại các mục được ghi trong file lỗi của đúng group. `remove_nonillustrable_images.mjs --rules <file.json>` nhận một JSON gồm `types` và/hoặc `words`, vì vậy rule lọc ảnh có thể tuỳ chỉnh cho từng bộ từ vựng mà không sửa tool.
 
+- Các script trong `/tools` chỉ là công cụ hỗ trợ cho các nguồn ảnh dự phòng; kết quả tự động từ script không thay thế bước tìm kiếm, lọc và phân tích trực quan ảnh từ Google Search khi Google Search là nguồn được ưu tiên.
+
 ---
 
 ## 5. Choice Question Format
@@ -284,7 +302,7 @@ number	question	a	b	c	d	answers	word	type	ipa-uk	ipa-us	cerf	definition	vietname
 
 ### 5.1 `number`
 
-Định dạng:
+Định dạng khi tạo output mới:
 
 ```text
 {index}-{INPUT_FILE_STEM}
@@ -300,10 +318,10 @@ Ví dụ:
 
 Quy tắc:
 
-- Bắt đầu từ `1` cho mỗi file input.
-- Tăng dần theo thứ tự record.
+- Bắt đầu từ `1` cho mỗi file input và tăng dần theo thứ tự record.
 - Unique trong cùng file text.
 - `INPUT_FILE_STEM` là tên file input không bao gồm `.txt`.
+- Khi bổ sung vào file đã có, Choice Question dùng dạng `{last}+{N}-{INPUT_FILE_STEM}` theo mục 2.2, ví dụ `65+1-CAM18-TEST2-PASSAGE1`. Ký hiệu `+N` chỉ áp dụng cho record Choice Question được append.
 
 ### 5.2 `question`
 
@@ -422,11 +440,11 @@ Quy tắc:
 
 ### 5.12 `image`
 
-Đường dẫn (URL) hình ảnh minh họa cho từ vựng.
+Tên file ảnh dạng Local trong thư mục tạm `/images`; Remote URL chỉ được phép tồn tại tạm thời trước khi tải ảnh về và thay bằng tên file `.jpg`. Khi đối chiếu output khác, chỉ cần kiểm tra tên file dạng Local, không cần kiểm tra file vật lý trong `/images`.
 
 Quy tắc:
 
-- Để trống. Cột này vẫn tồn tại nhưng không điền giá trị.
+- Để trống nếu không có ảnh phù hợp hoặc nếu từ/cụm từ thuộc nhóm không thể minh hoạ ổn định. Nếu có ảnh, ghi tên file Local `.jpg`; không ghi Remote URL trong output sau khi hoàn tất.
 
 ### 5.13 `example`
 
@@ -496,9 +514,8 @@ number	question	answer	type	ipa-uk	ipa-us	cerf	definition	vietnamese	image	examp
 
 Quy tắc:
 
-- Không bắt đầu lại từ `1`.
-- Tiếp tục từ số cuối cùng của Choice Question trong cùng input.
-- Ví dụ nếu Choice Question có 40 câu, Fill The Blank bắt đầu từ `41-{INPUT_FILE_STEM}`.
+- Khi tạo output mới, không bắt đầu lại từ `1`; tiếp tục từ số cuối cùng của Choice Question trong cùng input. Ví dụ nếu Choice Question có 40 câu, Fill The Blank bắt đầu từ `41-{INPUT_FILE_STEM}`.
+- Khi bổ sung vào danh sách đã có, tiếp tục tăng số nguyên từ số cuối cùng hiện có của file Fill The Blank, theo mục 2.2; không dùng dạng nối chuỗi `+`.
 
 ### 6.2 `question`
 
@@ -585,11 +602,11 @@ Quy tắc:
 
 ### 6.10 `image`
 
-Đường dẫn (URL) hình ảnh minh họa cho từ vựng.
+Tên file ảnh dạng Local trong thư mục tạm `/images`; Remote URL chỉ được phép tồn tại tạm thời trước khi tải ảnh về và thay bằng tên file `.jpg`. Khi đối chiếu output khác, chỉ cần kiểm tra tên file dạng Local, không cần kiểm tra file vật lý trong `/images`.
 
 Quy tắc:
 
-- Để trống. Cột này vẫn tồn tại nhưng không điền giá trị.
+- Để trống nếu không có ảnh phù hợp hoặc nếu từ/cụm từ thuộc nhóm không thể minh hoạ ổn định. Nếu có ảnh, ghi tên file Local `.jpg`; không ghi Remote URL trong output sau khi hoàn tất.
 
 ### 6.11 `example`
 
@@ -677,12 +694,19 @@ Ví dụ input có 40 từ hợp lệ:
 Trước khi kết thúc, Agent phải kiểm tra:
 
 - Mỗi file Choice Question có tên `CHOICE-{INPUT_FILE_STEM}.txt` và mỗi file Fill The Blank có tên `FILL-{INPUT_FILE_STEM}.txt`.
+- Toàn bộ file output là TSV `.txt`; nếu phát hiện file output ở định dạng khác, file đó đã được chuyển đổi sang `.txt` mà không thay đổi nội dung dữ liệu hoặc thứ tự cột.
 - Choice Question có đúng 19 cột mỗi dòng.
 - Fill The Blank có đúng 14 cột mỗi dòng.
 - `answers` của Choice Question chỉ là `a`, `b`, `c`, hoặc `d`.
 - `answer` của Fill The Blank là lowercase.
 - Số thứ tự tăng dần và không trùng.
-- Fill The Blank tiếp tục số thứ tự sau Choice Question.
+- Khi tạo output mới, Fill The Blank tiếp tục số thứ tự sau Choice Question; khi bổ sung vào danh sách đã có, số mới tiếp tục sau record Fill The Blank cuối cùng.
+- Khi tạo output mới hoặc cập nhật hình ảnh, các record đã được kiểm tra tuần tự từ trên xuống dưới.
+- Remote URL trong cột `image` đã được tải trực tiếp, chuyển thành JPEG `.jpg` và thay bằng tên file cục bộ.
+- Với từ chưa có ảnh, đã kiểm tra các output khác để tái sử dụng theo đúng cả từ vựng và nghĩa trước khi tải ảnh mới.
+- Từ vựng trùng nhưng khác nghĩa dùng file ảnh riêng với index phân biệt, không dùng lại ảnh sai nghĩa.
+- Các cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng đã được để trống trường `image`, không tìm hoặc tải ảnh.
+- Mọi giá trị `image` được gắn vào output là tên file Local có đuôi `.jpg`, đã được xem trước khi tải mới hoặc đã được xác nhận từ record ảnh được tái sử dụng, và có tỷ lệ tương đối `3:4`, `3:2` hoặc `16:9`; không yêu cầu file đó phải còn tồn tại trong `/images`.
 - Trước khi tạo output, danh từ số nhiều có quy tắc và động từ quá khứ có quy tắc đã được chuyển về dạng nguyên mẫu trong file input tương ứng.
 - Trước khi tạo output, danh từ số nhiều bất quy tắc và động từ bất quy tắc đã được bổ sung từ gốc vào file input tương ứng.
 - Definition của các từ gốc được bổ sung từ dạng bất quy tắc phải giải thích rõ quan hệ với dạng biến đổi ban đầu.
@@ -707,7 +731,13 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không dùng distractor khác loại từ nếu có lựa chọn tốt hơn.
 - Không bỏ qua IPA UK/US.
 - Không thêm header vào file text mới nếu muốn nhất quán với các file hiện có.
-- Không xuất file `.csv`, dùng file `.txt` với ký tự tab thực làm delimiter.
+- Không xuất hoặc giữ file output ở dạng `.csv`; bắt buộc dùng file `.txt` với ký tự tab thực làm delimiter. Khi chuyển đổi file cũ, không được thay đổi nội dung field hoặc thứ tự cột.
+- Không tìm ảnh mới trước khi kiểm tra Remote URL và ảnh có sẵn trong các output khác.
+- Không tái sử dụng ảnh chỉ vì trùng cách viết từ vựng; phải trùng cả nghĩa.
+- Không áp dụng quy trình tìm hoặc tái sử dụng ảnh cho cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng; các trường hợp này phải để trống `image`.
+- Không dùng cùng một ảnh cho các nghĩa khác nhau của cùng từ nếu chưa có xác nhận ảnh minh hoạ chính xác; trường hợp khác nghĩa phải tải ảnh mới và thêm index vào tên file.
+- Không gắn Remote URL trực tiếp vào output sau khi tạo hoặc cập nhật; phải tải về, kiểm tra trực quan, chuẩn hoá thành `.jpg` và dùng tên file cục bộ.
+- Không dùng ảnh chưa xem trước, sai ngữ cảnh, không phải JPEG `.jpg`, hoặc không gần một trong các tỷ lệ `3:4`, `3:2`, `16:9`.
 - Không tạo bài trực tiếp từ danh từ số nhiều có quy tắc hoặc động từ quá khứ có quy tắc khi chúng cần được chuyển về nguyên mẫu trước.
 - Không bỏ qua việc bổ sung từ gốc cho danh từ số nhiều bất quy tắc hoặc động từ bất quy tắc.
 - Không chuyển tính từ dạng `-ed` hoặc `-ing` như `interested`, `interesting` về động từ gốc.
