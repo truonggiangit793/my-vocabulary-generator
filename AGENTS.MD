@@ -261,9 +261,18 @@ Sau khi đã xử lý Remote URL và kiểm tra khả năng tái sử dụng tê
 4. Không dùng ảnh cho trạng từ, giới từ, cấu trúc ngữ pháp, thành ngữ mang ý nghĩa trừu tượng, quan hệ trừu tượng, khái niệm đánh giá hoặc cụm từ dài khoảng 3 từ trở lên mang ý nghĩa trừu tượng. Để trống trường ảnh trong các trường hợp này. Với từ/cụm từ đa nghĩa mà không có một minh hoạ ổn định, cũng để trống trường ảnh.
 5. Với kết quả từ Google Search, lọc các ảnh theo nghĩa, `definition`, part of speech và ngữ cảnh; xem trước và phân tích kỹ từng ứng viên phù hợp trước khi chọn ảnh. Không chấp nhận ảnh chỉ liên quan lỏng lẻo qua tiêu đề, tag, hoặc một nghĩa khác của từ.
 
+#### Yêu cầu chất lượng và tải ảnh gốc
+
+- Không được dùng ảnh thumbnail/ảnh xem trước của Google làm file ảnh cuối cùng. Các URL dạng `encrypted-tbn0.gstatic.com`, URL thumbnail, ảnh bị thu nhỏ trong trang kết quả hoặc ảnh chỉ có kích thước vài trăm pixel chỉ dùng để xem và đánh giá, không được tải trực tiếp vào `/images`.
+- Sau khi chọn ứng viên trên Google Images, phải mở trang nguồn hoặc truy cập URL ảnh gốc để tải phiên bản có độ phân giải cao hơn. Nếu không lấy được ảnh gốc, bỏ qua ứng viên đó và chọn ứng viên khác; không phóng to thumbnail bằng nội suy để giả lập ảnh chất lượng cao.
+- Ảnh mới tải phải có cạnh dài tối thiểu khoảng `1200 px`; ưu tiên ảnh có chiều ngang từ `1600 px` trở lên và đủ chi tiết để nhìn rõ chủ thể khi hiển thị trên Anki. Ảnh dưới ngưỡng này chỉ được dùng khi không tồn tại ảnh phù hợp hơn và Agent phải ghi nhận ngoại lệ trong báo cáo.
+- Sau khi tải, phải kiểm tra kích thước pixel thực tế, định dạng JPEG và độ rõ của chủ thể; việc chuyển sang `.jpg` hoặc cắt về tỷ lệ `3:4`, `3:2` hoặc `16:9` không được làm ảnh bị mờ, vỡ hoặc mất chủ thể chính.
+- Khi người dùng yêu cầu nâng chất lượng ảnh, chỉ tải lại các ảnh có nguồn Google Search/Google Images được xác định trong lần xử lý hiện tại; không tải lại các ảnh Local đã được chuyển đổi từ Remote URL cũ nếu người dùng không yêu cầu.
+
 #### Yêu cầu tệp ảnh
 
 - Định dạng bắt buộc: `.jpg` (JPEG). Tỷ lệ khung hình tương đối phải là `3:4`, `3:2` hoặc `16:9`; ưu tiên ảnh có chiều ngang.
+- Chất lượng bắt buộc: không dùng thumbnail hoặc ảnh preview độ phân giải thấp; phải lưu ảnh gốc/ảnh độ phân giải cao đã kiểm tra, với cạnh dài tối thiểu khoảng `1200 px` và ưu tiên từ `1600 px` trở lên.
 - Ảnh được lưu trực tiếp trong thư mục tạm `/images`, không tạo thư mục con.
 - Tên tệp dùng lowercase kebab-case: `baseball-bat.jpg`, `coral-reef.jpg`. Khi cùng từ vựng có nhiều nghĩa, thêm index tuần tự như `baseball-bat-2.jpg`. Giữ ký tự đặc biệt khi cần để khớp tên đã có trong TSV.
 - Cùng một nghĩa/từ phải dùng cùng một filename ở Choice và Fill. Không tạo hai ảnh khác nhau cho cùng bản ghi nếu không có lý do ngữ nghĩa rõ ràng.
@@ -707,6 +716,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Từ vựng trùng nhưng khác nghĩa dùng file ảnh riêng với index phân biệt, không dùng lại ảnh sai nghĩa.
 - Các cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng đã được để trống trường `image`, không tìm hoặc tải ảnh.
 - Mọi giá trị `image` được gắn vào output là tên file Local có đuôi `.jpg`, đã được xem trước khi tải mới hoặc đã được xác nhận từ record ảnh được tái sử dụng, và có tỷ lệ tương đối `3:4`, `3:2` hoặc `16:9`; không yêu cầu file đó phải còn tồn tại trong `/images`.
+- Mọi ảnh mới tải từ Google đã được lấy từ ảnh gốc thay vì thumbnail, có cạnh dài tối thiểu khoảng `1200 px` hoặc có ngoại lệ được ghi nhận, và không bị mờ/vỡ sau khi chuyển sang JPEG.
 - Trước khi tạo output, danh từ số nhiều có quy tắc và động từ quá khứ có quy tắc đã được chuyển về dạng nguyên mẫu trong file input tương ứng.
 - Trước khi tạo output, danh từ số nhiều bất quy tắc và động từ bất quy tắc đã được bổ sung từ gốc vào file input tương ứng.
 - Definition của các từ gốc được bổ sung từ dạng bất quy tắc phải giải thích rõ quan hệ với dạng biến đổi ban đầu.
@@ -738,6 +748,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không dùng cùng một ảnh cho các nghĩa khác nhau của cùng từ nếu chưa có xác nhận ảnh minh hoạ chính xác; trường hợp khác nghĩa phải tải ảnh mới và thêm index vào tên file.
 - Không gắn Remote URL trực tiếp vào output sau khi tạo hoặc cập nhật; phải tải về, kiểm tra trực quan, chuẩn hoá thành `.jpg` và dùng tên file cục bộ.
 - Không dùng ảnh chưa xem trước, sai ngữ cảnh, không phải JPEG `.jpg`, hoặc không gần một trong các tỷ lệ `3:4`, `3:2`, `16:9`.
+- Không lưu thumbnail Google, URL `encrypted-tbn0.gstatic.com`, ảnh preview vài trăm pixel, hoặc ảnh bị phóng to từ thumbnail làm ảnh cuối cùng; phải lấy ảnh gốc/độ phân giải cao và kiểm tra kích thước pixel trước khi cập nhật output.
 - Không tạo bài trực tiếp từ danh từ số nhiều có quy tắc hoặc động từ quá khứ có quy tắc khi chúng cần được chuyển về nguyên mẫu trước.
 - Không bỏ qua việc bổ sung từ gốc cho danh từ số nhiều bất quy tắc hoặc động từ bất quy tắc.
 - Không chuyển tính từ dạng `-ed` hoặc `-ing` như `interested`, `interesting` về động từ gốc.

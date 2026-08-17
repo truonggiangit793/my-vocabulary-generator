@@ -16,6 +16,7 @@ const api = 'https://api.openverse.org/v1/images';
 const concurrency = 1;
 const apiRequestIntervalMs = 1_100;
 let nextApiRequestAt = 0;
+const minLongEdge = 1_200;
 const stopWords = new Set('a an the to of in on at for from with and or by as is are be being been this that these those it its one someone something which who whose when where while than rather very more most less least only usually normally mainly mostly quite way degree state type kind person animal thing area place time use take make have has had do does did'.split(' '));
 
 function rowsFrom(content) {
@@ -74,12 +75,17 @@ async function lookupImage(entry) {
   };
   const semanticQuery = queryFor(entry);
   let preferred = await preferredCandidates(semanticQuery, fetchJson);
+  preferred = preferred?.filter(item => Math.max(item.width ?? 0, item.height ?? 0) >= minLongEdge) ?? null;
   if (!preferred?.length && semanticQuery !== entry.word) preferred = await preferredCandidates(entry.word, fetchJson);
+  preferred = preferred?.filter(item => Math.max(item.width ?? 0, item.height ?? 0) >= minLongEdge) ?? null;
   if (preferred?.length) return preferred.sort((left, right) => candidateScore(right, entry) - candidateScore(left, entry));
 
   let candidates = await runQuery(semanticQuery);
   if (!candidates.length && semanticQuery !== entry.word) candidates = await runQuery(entry.word);
-  const valid = candidates.filter(item => item.url && /^https:\/\/live\.staticflickr\.com\//.test(item.url) && item.width && item.height);
+  const valid = candidates.filter(item => item.url
+    && /^https:\/\/live\.staticflickr\.com\//.test(item.url)
+    && item.width && item.height
+    && Math.max(item.width, item.height) >= minLongEdge);
   if (!valid.length) return null;
   valid.sort((left, right) => candidateScore(right, entry) - candidateScore(left, entry));
   return valid.sort((left, right) => candidateScore(right, entry) - candidateScore(left, entry))
@@ -99,6 +105,11 @@ async function downloadAsJpeg(url, destination) {
   } finally {
     await rm(tempDownload, { force: true });
     await rm(tempJpeg, { force: true });
+  }
+  const dimensions = execFileSync('/usr/bin/sips', ['-g', 'pixelWidth', '-g', 'pixelHeight', destination], { encoding: 'utf8' });
+  const pixels = [...dimensions.matchAll(/: (\d+)/g)].map(match => Number(match[1]));
+  if (pixels.length < 2 || Math.max(pixels[0], pixels[1]) < minLongEdge) {
+    throw new Error(`JPEG long edge is below ${minLongEdge}px`);
   }
 }
 

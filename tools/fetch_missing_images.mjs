@@ -14,6 +14,7 @@ import { configuredSourceSummary, preferredCandidates } from './image_sources.mj
 const { root, outputDir, imageDir, reportPrefix } = parseImageToolOptions();
 const openverseApi = 'https://api.openverse.org/v1/images';
 const concurrency = 3;
+const minLongEdge = 1_200;
 
 function slug(word) {
   const base = word.normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
@@ -39,20 +40,28 @@ async function fetchJson(url, extraHeaders = {}) {
 }
 
 async function lookupImage(word) {
-  const select = candidates => candidates.find(item => item.width && item.height && item.width >= item.height) ?? candidates[0];
+  const select = candidates => candidates.find(item => item.width && item.height
+    && Math.max(item.width, item.height) >= minLongEdge
+    && item.width >= item.height)
+    ?? candidates.find(item => item.width && item.height && Math.max(item.width, item.height) >= minLongEdge);
   const preferred = await preferredCandidates(word, fetchJson);
-  if (preferred?.length) return select(preferred);
+  const preferredImage = preferred?.length ? select(preferred) : null;
+  if (preferredImage) return preferredImage;
 
   // Openverse/Flickr is used only when none of the configured preferred
   // providers has a suitable result.
   const query = new URLSearchParams({ q: word, page_size: '5', source: 'flickr' });
   const data = await fetchJson(`${openverseApi}?${query}`);
-  const candidates = (data.results ?? []).filter(item => item.url && /^https:\/\/live\.staticflickr\.com\//.test(item.url));
+  const candidates = (data.results ?? []).filter(item => item.url
+    && /^https:\/\/live\.staticflickr\.com\//.test(item.url)
+    && Math.max(item.width ?? 0, item.height ?? 0) >= minLongEdge);
   // Prefer landscape images without requiring a fixed aspect ratio. Fall back
   // to another valid result when Openverse has no landscape candidate.
   const image = select(candidates);
   return image ? {
     url: image.url,
+    width: image.width,
+    height: image.height,
     source: image.foreign_landing_url,
     attribution: image.attribution,
     license: `${image.license ?? ''}-${image.license_version ?? ''}`,
@@ -70,6 +79,11 @@ async function downloadAsJpeg(url, destination) {
     await rm(tmp, { force: true });
   }
   if ((await stat(destination)).size < 1024) throw new Error('JPEG is unexpectedly small');
+  const dimensions = execFileSync('/usr/bin/sips', ['-g', 'pixelWidth', '-g', 'pixelHeight', destination], { encoding: 'utf8' });
+  const pixels = [...dimensions.matchAll(/: (\d+)/g)].map(match => Number(match[1]));
+  if (pixels.length < 2 || Math.max(pixels[0], pixels[1]) < minLongEdge) {
+    throw new Error(`JPEG long edge is below ${minLongEdge}px`);
+  }
 }
 
 function rowsFrom(content) {
