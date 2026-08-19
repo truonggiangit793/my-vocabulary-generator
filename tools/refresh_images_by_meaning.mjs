@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
-// Replaces images using the English definition as part of the search
-// intent. Preferred providers are tried in the configured source order before
-// Openverse/Flickr. The selector prefers a landscape image while retaining a
-// semantic title/tag match to the word and its definition.
+// Replaces image content using the English definition as part of the search
+// intent. Existing valid local filenames are immutable: refreshed JPEG content
+// is written to the exact filename already referenced by the TSV. Preferred
+// providers are tried in the configured source order before Openverse/Flickr.
+// The selector prefers a landscape image while retaining a semantic title/tag
+// match to the word and its definition.
 
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';

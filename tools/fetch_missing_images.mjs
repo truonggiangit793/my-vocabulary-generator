@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 // Fetch one broadly illustrative image for every vocabulary item whose image
-// field is empty. The TSV files are updated only
-// after the corresponding JPEG has been written successfully.
+// field is empty. Existing valid local filenames are immutable: this tool
+// only creates names for empty image fields and never renames existing ones.
+// The TSV files are updated only after the corresponding JPEG has been written
+// successfully.
 
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';

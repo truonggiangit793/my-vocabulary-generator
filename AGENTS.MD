@@ -231,12 +231,14 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 Áp dụng quy trình này khi người dùng yêu cầu tạo dữ liệu output mới hoặc cập nhật hình ảnh cho output đã có. Với output mới, thực hiện quy trình từ đầu cho từng record; với output đã có, bắt đầu bằng việc kiểm tra giá trị hiện tại trong cột `image`:
 
+**Nguyên tắc bất biến filename:** Khi người dùng yêu cầu cập nhật, làm mới hoặc đồng bộ hình ảnh, mọi giá trị `image` đang là local filename hợp lệ phải được giữ nguyên tuyệt đối. Agent/tool chỉ được thay đổi nội dung ảnh tại đúng filename hiện có; không được đổi tên, chuẩn hoá lại slug, thêm/bớt index, đổi phần mở rộng, hoặc thay filename trong TSV. Chỉ được tạo và gán filename mới cho record chưa có local filename hợp lệ (ô trống hoặc Remote URL đang được chuyển đổi). Nếu phát hiện xung đột nghĩa nhưng filename local hợp lệ đã tồn tại, giữ nguyên filename đó và báo cáo xung đột; không giải quyết bằng cách đổi tên file.
+
 Trước khi xử lý từng record, xác định record đó có thể minh hoạ ổn định theo mục Quy trình chọn ảnh hay không. Với cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng, để trống `image` và bỏ qua toàn bộ bước Remote URL, tái sử dụng ảnh và tìm ảnh mới.
 
-1. Kiểm tra tuần tự các record và cột `image` từ trên xuống dưới. Nếu cột `image` đang chứa Remote URL hợp lệ (`http://` hoặc `https://`), tải ảnh trực tiếp từ liên kết đó về `/images`, chuyển/chuẩn hoá thành JPEG `.jpg`, đặt tên file theo quy định và thay Remote URL trong output bằng tên file cục bộ.
+1. Kiểm tra tuần tự các record và cột `image` từ trên xuống dưới. Nếu cột `image` đang chứa Remote URL hợp lệ (`http://` hoặc `https://`), tải ảnh trực tiếp từ liên kết đó về `/images`, chuyển/chuẩn hoá thành JPEG `.jpg`, đặt tên file theo quy định và thay Remote URL trong output bằng tên file cục bộ. Nếu cột `image` đã chứa local filename hợp lệ, giữ nguyên filename đó trong mọi trường hợp.
 2. Nếu từ vựng chưa có hình ảnh, chỉ kiểm tra các file output khác để tìm tên file ảnh dạng Local trước khi tìm ảnh mới. Chỉ tái sử dụng ảnh khi đồng thời trùng **từ vựng** và **nghĩa** (đối chiếu cả `definition`, và khi cần cả `vietnamese`/ngữ cảnh); không cần kiểm tra file vật lý tương ứng trong `/images` vì đây chỉ là thư mục tạm.
 3. Nếu không có record trùng cả từ và nghĩa, hoặc record trùng nhưng chưa có tên file ảnh dạng Local, tìm và tải ảnh mới theo các bước kiểm tra nghĩa và tìm kiếm Internet bên dưới.
-4. Nếu trùng từ vựng nhưng khác nghĩa, không được dùng lại ảnh cũ. Phải tải ảnh mới phù hợp với nghĩa mới và gắn index tuần tự vào tên file để phân biệt, ví dụ `hinh-anh.jpg`, `hinh-anh-2.jpg`, `hinh-anh-3.jpg`.
+4. Nếu trùng từ vựng nhưng khác nghĩa, không được dùng lại ảnh cũ cho record chưa có filename. Phải tải ảnh mới phù hợp với nghĩa mới và chỉ gắn index tuần tự khi tạo filename mới cho record đó. Nếu record đã có local filename hợp lệ, giữ nguyên filename hiện có; không đổi sang filename có index khác.
 5. Khi xử lý một từ vựng, phải thực hiện lần lượt: xem nghĩa của từ; kiểm tra các output khác để tái sử dụng ảnh đúng từ + đúng nghĩa; nếu không có thì xem `definition` và ngữ cảnh để tìm ảnh mới trên Internet; xem trước và phân tích kỹ ảnh để xác nhận chủ thể, hành động hoặc bối cảnh trong ảnh phù hợp với nghĩa đang kiểm tra; cuối cùng mới tải, lưu và cập nhật output.
 6. Ảnh tải về bắt buộc là JPEG có đuôi `.jpg`, ưu tiên khung hình chiều ngang và có tỷ lệ tương đối thuộc một trong các tỷ lệ `3:4`, `3:2` hoặc `16:9`. Không gắn ảnh chỉ dựa trên tiêu đề, tag hoặc URL nếu chưa kiểm tra trực quan và đối chiếu nghĩa.
 
@@ -280,7 +282,7 @@ Chỉ khi Google Search đã được thực hiện và không có ảnh phù h�
 - Định dạng bắt buộc: `.jpg` (JPEG). Tỷ lệ khung hình tương đối phải là `3:4`, `3:2` hoặc `16:9`; ưu tiên ảnh có chiều ngang.
 - Chất lượng bắt buộc: không dùng thumbnail hoặc ảnh preview độ phân giải thấp; phải lưu ảnh gốc/ảnh độ phân giải cao đã kiểm tra, với cạnh dài tối thiểu khoảng `1200 px` và ưu tiên từ `1600 px` trở lên.
 - Ảnh được lưu trực tiếp trong thư mục tạm `/images`, không tạo thư mục con.
-- Tên tệp dùng lowercase kebab-case: `baseball-bat.jpg`, `coral-reef.jpg`. Khi cùng từ vựng có nhiều nghĩa, thêm index tuần tự như `baseball-bat-2.jpg`. Giữ ký tự đặc biệt khi cần để khớp tên đã có trong TSV.
+- Tên tệp mới dùng lowercase kebab-case: `baseball-bat.jpg`, `coral-reef.jpg`. Khi cùng từ vựng có nhiều nghĩa và record chưa có local filename, thêm index tuần tự như `baseball-bat-2.jpg`. Giữ nguyên tuyệt đối tên local filename hợp lệ đã có trong TSV, kể cả khi filename không còn đúng quy tắc đặt tên mới.
 - Cùng một nghĩa/từ phải dùng cùng một filename ở Choice và Fill. Không tạo hai ảnh khác nhau cho cùng bản ghi nếu không có lý do ngữ nghĩa rõ ràng.
 - Không dùng ảnh có watermark che chủ thể, chữ đáp án, hoặc nội dung gây hiểu nhầm.
 
@@ -288,6 +290,7 @@ Chỉ khi Google Search đã được thực hiện và không có ảnh phù h�
 
 - Mỗi giá trị `image` không rỗng trong TSV phải là tên file ảnh dạng Local, không phải Remote URL. Không bắt buộc kiểm tra file vật lý tương ứng trong `/images` vì `/images` chỉ là thư mục tạm.
 - Nếu tên file ảnh bị xoá hoặc thay thế khỏi dữ liệu output, phải làm trống hoặc cập nhật mọi record còn tham chiếu đến tên file đó.
+- Khi cập nhật hoặc đồng bộ hình ảnh, không được đổi tên bất kỳ local filename hợp lệ nào đã tồn tại; chỉ được thay nội dung ảnh tại đúng filename đó hoặc bổ sung filename cho ô đang trống/Remote URL.
 - Khi chỉ cập nhật hình ảnh cho output đã có, Choice vẫn có 19 cột và Fill vẫn có 14 cột; chỉ trường `image` được phép thay đổi. Quy tắc này không hạn chế việc tạo đầy đủ các field khi tạo output mới.
 - Rà ngẫu nhiên và rà bắt buộc mọi từ đa nghĩa/rủi ro cao (ví dụ homonym, polysemy, idiom) bằng definition trước khi hoàn tất.
 
@@ -725,8 +728,9 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Khi tạo output mới, Fill The Blank tiếp tục số thứ tự sau Choice Question; khi bổ sung vào danh sách đã có, số mới tiếp tục sau record Fill The Blank cuối cùng.
 - Khi tạo output mới hoặc cập nhật hình ảnh, các record đã được kiểm tra tuần tự từ trên xuống dưới.
 - Remote URL trong cột `image` đã được tải trực tiếp, chuyển thành JPEG `.jpg` và thay bằng tên file cục bộ.
+- Mọi local filename hợp lệ đã có trước khi cập nhật hoặc đồng bộ hình ảnh vẫn giữ nguyên 100%, không bị đổi slug, index, phần mở rộng hoặc giá trị trong TSV.
 - Với từ chưa có ảnh, đã kiểm tra các output khác để tái sử dụng theo đúng cả từ vựng và nghĩa trước khi tải ảnh mới.
-- Từ vựng trùng nhưng khác nghĩa dùng file ảnh riêng với index phân biệt, không dùng lại ảnh sai nghĩa.
+- Từ vựng trùng nhưng khác nghĩa chỉ dùng filename riêng có index khi record cần ảnh mới; không đổi filename local hợp lệ đã tồn tại.
 - Các cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng đã được để trống trường `image`, không tìm hoặc tải ảnh.
 - Mọi giá trị `image` được gắn vào output là tên file Local có đuôi `.jpg`, đã được xem trước khi tải mới hoặc đã được xác nhận từ record ảnh được tái sử dụng, và có tỷ lệ tương đối `3:4`, `3:2` hoặc `16:9`; không yêu cầu file đó phải còn tồn tại trong `/images`.
 - Mọi ảnh mới tải từ Google đã được lấy từ ảnh gốc thay vì thumbnail, có cạnh dài tối thiểu khoảng `1200 px` hoặc có ngoại lệ được ghi nhận, giữ nguyên nội dung/bố cục/kích thước pixel gốc và không bị mờ/vỡ sau khi chuyển sang JPEG.
@@ -758,7 +762,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không tìm ảnh mới trước khi kiểm tra Remote URL và ảnh có sẵn trong các output khác.
 - Không tái sử dụng ảnh chỉ vì trùng cách viết từ vựng; phải trùng cả nghĩa.
 - Không áp dụng quy trình tìm hoặc tái sử dụng ảnh cho cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng; các trường hợp này phải để trống `image`.
-- Không dùng cùng một ảnh cho các nghĩa khác nhau của cùng từ nếu chưa có xác nhận ảnh minh hoạ chính xác; trường hợp khác nghĩa phải tải ảnh mới và thêm index vào tên file.
+- Không dùng cùng một ảnh cho các nghĩa khác nhau của cùng từ nếu chưa có xác nhận ảnh minh hoạ chính xác; trường hợp record chưa có local filename thì tải ảnh mới và thêm index vào tên file nếu cần. Không được đổi tên local filename hợp lệ đã tồn tại.
 - Không gắn Remote URL trực tiếp vào output sau khi tạo hoặc cập nhật; phải tải về, kiểm tra trực quan, chuẩn hoá thành `.jpg` và dùng tên file cục bộ.
 - Không dùng ảnh chưa xem trước, sai ngữ cảnh, không phải JPEG `.jpg`, hoặc không gần một trong các tỷ lệ `3:4`, `3:2`, `16:9`.
 - Không tự ý crop/cắt, resize, kéo giãn, thêm padding hoặc thay đổi bố cục ảnh; nếu ảnh gốc không gần tỷ lệ yêu cầu thì phải chọn ảnh khác.
