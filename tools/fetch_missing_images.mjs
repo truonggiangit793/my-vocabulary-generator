@@ -35,6 +35,14 @@ function fileName(word, used) {
   return name;
 }
 
+function isValidLocalFilename(value) {
+  return Boolean(value)
+    && !/^https?:\/\//i.test(value)
+    && !value.includes('/')
+    && !value.includes('\\')
+    && /\.jpg$/i.test(value);
+}
+
 async function fetchJson(url, extraHeaders = {}) {
   const response = await fetch(url, { headers: { 'User-Agent': 'anki-vocabulary-image-fetcher/1.0', ...extraHeaders } });
   if (!response.ok) throw new Error(`API returned ${response.status}`);
@@ -111,7 +119,7 @@ async function main() {
     for (const row of parsed.rows) {
       if (row.length !== 19) throw new Error(`${file} has a row with ${row.length} columns`);
       choiceWords.add(row[7]);
-      if (row[14]) {
+      if (isValidLocalFilename(row[14])) {
         used.add(row[14]);
         try { await stat(path.join(imageDir, row[14])); }
         catch { if (!words.has(row[7])) words.set(row[7], row[14]); }
@@ -125,7 +133,7 @@ async function main() {
     const parsed = rowsFrom(await readFile(path.join(outputDir, fill), 'utf8'));
     for (const row of parsed.rows) {
       if (row.length !== 14) throw new Error(`${fill} has a row with ${row.length} columns`);
-      if (!row[9] && !choiceWords.has(row[2]) && !words.has(row[2])) words.set(row[2], null);
+      if (!isValidLocalFilename(row[9]) && !choiceWords.has(row[2]) && !words.has(row[2])) words.set(row[2], null);
     }
   }
   for (const [word, name] of words) if (!name) words.set(word, fileName(word, used));
@@ -161,7 +169,7 @@ async function main() {
   for (const item of choiceFiles) {
     let changed = false;
     for (const row of item.rows) {
-      if (!row[14] && saved.has(row[7])) { row[14] = saved.get(row[7]); changed = true; }
+      if (!isValidLocalFilename(row[14]) && saved.has(row[7])) { row[14] = saved.get(row[7]); changed = true; }
     }
     if (changed) await writeFile(item.fullPath, item.rows.map(row => row.join('\t')).join('\n') + (item.hasFinalNewline ? '\n' : ''), 'utf8');
   }
@@ -178,7 +186,7 @@ async function main() {
     let changed = false;
     for (const row of parsed.rows) {
       if (row.length !== 14) throw new Error(`${fill} has a row with ${row.length} columns`);
-      if (!row[9] && imageByWord.has(row[2])) { row[9] = imageByWord.get(row[2]); changed = true; }
+      if (!isValidLocalFilename(row[9]) && imageByWord.has(row[2])) { row[9] = imageByWord.get(row[2]); changed = true; }
     }
     if (changed) await writeFile(fullPath, parsed.rows.map(row => row.join('\t')).join('\n') + (parsed.hasFinalNewline ? '\n' : ''), 'utf8');
   }

@@ -227,6 +227,16 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 Ảnh là dữ liệu hỗ trợ ghi nhớ, không phải trường bắt buộc. Chỉ điền cột `image` khi một ảnh có thể minh hoạ **đúng nghĩa đang được kiểm tra**. Nếu không có ảnh phù hợp, để trống cột này ở cả Choice Question và Fill The Blank.
 
+#### 4.1.0 Đồng bộ ảnh giữa Choice Question và Fill The Blank
+
+- Khi người dùng chỉ yêu cầu **đồng bộ hình ảnh**, Agent chỉ được đối chiếu và đồng bộ các tham chiếu ảnh hiện có giữa Choice và Fill. Không được thực hiện Google Images, tìm kiếm nguồn ảnh, tải ảnh mới, chuyển đổi ảnh hoặc thay đổi nội dung ảnh trong `/images`.
+- Trong cùng một thư mục nhóm, record Choice và record Fill tương ứng phải dùng cùng một local filename hợp lệ ở cột `image` khi chúng có cùng từ/cụm từ đích và cùng nghĩa (đối chiếu thêm `definition` và `vietnamese`, không chỉ đối chiếu cách viết của từ).
+- Phải kiểm tra đồng bộ hai chiều: nếu một bên có local filename hợp lệ còn bên kia để trống, chứa Remote URL hoặc giá trị local không hợp lệ, copy chính xác filename đó sang bên còn thiếu. Không tải thêm ảnh và không tạo filename khác cho cùng record.
+- Nếu cả hai bên chưa có ảnh hợp lệ, giữ nguyên cả hai ô trống/không hợp lệ và ghi nhận là chưa có ảnh để đồng bộ; không tìm hoặc tải ảnh mới trong chế độ đồng bộ.
+- Nếu cả hai bên đã có cùng local filename hợp lệ, giữ nguyên và coi là đã đồng bộ.
+- Nếu hai bên đang có hai local filename hợp lệ khác nhau, không được tự ý đổi tên, ghi đè tham chiếu hoặc xoá filename nào. Giữ nguyên cả hai, ghi nhận xung đột để xử lý thủ công; chỉ kết luận đồng bộ hoàn tất sau khi xung đột được giải quyết mà vẫn không đổi tên các filename đã tồn tại.
+- Không đồng bộ chỉ vì cùng spelling khi `definition` hoặc ngữ cảnh khác nhau; các nghĩa khác nhau phải được đối chiếu riêng.
+
 ### 4.1.1 Quy trình hình ảnh khi tạo mới hoặc cập nhật output
 
 Áp dụng quy trình này khi người dùng yêu cầu tạo dữ liệu output mới hoặc cập nhật hình ảnh cho output đã có. Với output mới, thực hiện quy trình từ đầu cho từng record; với output đã có, bắt đầu bằng việc kiểm tra giá trị hiện tại trong cột `image`:
@@ -235,12 +245,15 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 Trước khi xử lý từng record, xác định record đó có thể minh hoạ ổn định theo mục Quy trình chọn ảnh hay không. Với cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng, để trống `image` và bỏ qua toàn bộ bước Remote URL, tái sử dụng ảnh và tìm ảnh mới.
 
+Các bước tìm kiếm/tải ảnh bên dưới chỉ áp dụng khi người dùng yêu cầu tạo mới hoặc cập nhật ảnh. Nếu yêu cầu chỉ là đồng bộ, chỉ chạy `sync_image_references.mjs` và dừng sau bước đối chiếu local filename.
+
 1. Kiểm tra tuần tự các record và cột `image` từ trên xuống dưới. Nếu cột `image` đang chứa Remote URL hợp lệ (`http://` hoặc `https://`), tải ảnh trực tiếp từ liên kết đó về `/images`, chuyển/chuẩn hoá thành JPEG `.jpg`, đặt tên file theo quy định và thay Remote URL trong output bằng tên file cục bộ. Nếu cột `image` đã chứa local filename hợp lệ, giữ nguyên filename đó trong mọi trường hợp.
-2. Nếu từ vựng chưa có hình ảnh, chỉ kiểm tra các file output khác để tìm tên file ảnh dạng Local trước khi tìm ảnh mới. Chỉ tái sử dụng ảnh khi đồng thời trùng **từ vựng** và **nghĩa** (đối chiếu cả `definition`, và khi cần cả `vietnamese`/ngữ cảnh); không cần kiểm tra file vật lý tương ứng trong `/images` vì đây chỉ là thư mục tạm.
-3. Nếu không có record trùng cả từ và nghĩa, hoặc record trùng nhưng chưa có tên file ảnh dạng Local, tìm và tải ảnh mới theo các bước kiểm tra nghĩa và tìm kiếm Internet bên dưới.
-4. Nếu trùng từ vựng nhưng khác nghĩa, không được dùng lại ảnh cũ cho record chưa có filename. Phải tải ảnh mới phù hợp với nghĩa mới và chỉ gắn index tuần tự khi tạo filename mới cho record đó. Nếu record đã có local filename hợp lệ, giữ nguyên filename hiện có; không đổi sang filename có index khác.
-5. Khi xử lý một từ vựng, phải thực hiện lần lượt: xem nghĩa của từ; kiểm tra các output khác để tái sử dụng ảnh đúng từ + đúng nghĩa; nếu không có thì xem `definition` và ngữ cảnh để tìm ảnh mới trên Internet; xem trước và phân tích kỹ ảnh để xác nhận chủ thể, hành động hoặc bối cảnh trong ảnh phù hợp với nghĩa đang kiểm tra; cuối cùng mới tải, lưu và cập nhật output.
-6. Ảnh tải về bắt buộc là JPEG có đuôi `.jpg`, ưu tiên khung hình chiều ngang và có tỷ lệ tương đối thuộc một trong các tỷ lệ `3:4`, `3:2` hoặc `16:9`. Không gắn ảnh chỉ dựa trên tiêu đề, tag hoặc URL nếu chưa kiểm tra trực quan và đối chiếu nghĩa.
+2. Trước khi tìm ảnh mới, đối chiếu record Choice và Fill tương ứng theo cùng từ/cụm từ và nghĩa. Nếu một bên có local filename hợp lệ còn bên kia chưa có filename hợp lệ, đồng bộ bằng cách copy chính xác filename hiện có sang bên kia. Không đổi filename đã tồn tại.
+3. Nếu từ vựng chưa có hình ảnh ở cả hai dạng, chỉ kiểm tra các file output khác để tìm tên file ảnh dạng Local trước khi tìm ảnh mới. Chỉ tái sử dụng ảnh khi đồng thời trùng **từ vựng** và **nghĩa** (đối chiếu cả `definition`, và khi cần cả `vietnamese`/ngữ cảnh); không cần kiểm tra file vật lý tương ứng trong `/images` vì đây chỉ là thư mục tạm.
+4. Nếu không có record trùng cả từ và nghĩa, hoặc cả Choice và Fill tương ứng đều chưa có tên file ảnh dạng Local, khi đang tạo mới/cập nhật ảnh thì tìm và tải một ảnh mới rồi gắn cùng filename cho cả hai dạng. Trong yêu cầu chỉ đồng bộ, giữ nguyên trạng thái hiện tại và không tải ảnh.
+5. Nếu trùng từ vựng nhưng khác nghĩa, không được dùng lại ảnh cũ cho record chưa có filename. Phải tải ảnh mới phù hợp với nghĩa mới và chỉ gắn index tuần tự khi tạo filename mới cho record đó. Nếu record đã có local filename hợp lệ, giữ nguyên filename hiện có; không đổi sang filename có index khác.
+6. Khi xử lý một từ vựng, phải thực hiện lần lượt: xem nghĩa của từ; đồng bộ ảnh hợp lệ giữa Choice và Fill; kiểm tra các output khác để tái sử dụng ảnh đúng từ + đúng nghĩa; nếu không có thì xem `definition` và ngữ cảnh để tìm ảnh mới trên Internet; xem trước và phân tích kỹ ảnh để xác nhận chủ thể, hành động hoặc bối cảnh trong ảnh phù hợp với nghĩa đang kiểm tra; cuối cùng mới tải, lưu và cập nhật output.
+7. Ảnh tải về bắt buộc là JPEG có đuôi `.jpg`, ưu tiên khung hình chiều ngang và có tỷ lệ tương đối thuộc một trong các tỷ lệ `3:4`, `3:2` hoặc `16:9`. Không gắn ảnh chỉ dựa trên tiêu đề, tag hoặc URL nếu chưa kiểm tra trực quan và đối chiếu nghĩa.
 
 #### Nguồn ảnh ưu tiên
 
@@ -299,6 +312,7 @@ Chỉ khi Google Search đã được thực hiện và không có ảnh phù h�
 Các script trong `/tools` không gắn với một bộ đề cụ thể. Luôn truyền thư mục nhóm output cần xử lý:
 
 ```bash
+node tools/sync_image_references.mjs --output-dir output/<group>
 node tools/fetch_missing_images.mjs --output-dir output/<group> --image-dir images --google-search-verified
 node tools/refresh_images_by_meaning.mjs --output-dir output/<group> --image-dir images --google-search-verified
 node tools/remove_nonillustrable_images.mjs --output-dir output/<group> --image-dir images --rules tools/image-filter-rules.example.json
@@ -314,6 +328,7 @@ node tools/refresh_images_by_meaning.mjs --output-dir output/<group> --image-dir
 Nếu không thực hiện được Google Search, không thêm cờ này và phải hỏi người dùng trước. `refresh_images_by_meaning.mjs --retry` chỉ chạy lại các mục được ghi trong file lỗi của đúng group. `remove_nonillustrable_images.mjs --rules <file.json>` nhận một JSON gồm `types` và/hoặc `words`, vì vậy rule lọc ảnh có thể tuỳ chỉnh cho từng bộ từ vựng mà không sửa tool.
 
 - Các script trong `/tools` chỉ là công cụ hỗ trợ cho các nguồn ảnh dự phòng; kết quả tự động từ script không thay thế bước tìm kiếm, lọc và phân tích trực quan ảnh từ Google Search khi Google Search là nguồn được ưu tiên.
+- `sync_image_references.mjs` là bước đồng bộ local filename giữa Choice và Fill; chạy trước bước tìm/tải ảnh mới. Tool chỉ copy filename hợp lệ còn thiếu, không đổi tên filename đã tồn tại và phải báo các cặp có hai filename hợp lệ khác nhau.
 
 ---
 
@@ -729,6 +744,8 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Khi tạo output mới hoặc cập nhật hình ảnh, các record đã được kiểm tra tuần tự từ trên xuống dưới.
 - Remote URL trong cột `image` đã được tải trực tiếp, chuyển thành JPEG `.jpg` và thay bằng tên file cục bộ.
 - Mọi local filename hợp lệ đã có trước khi cập nhật hoặc đồng bộ hình ảnh vẫn giữ nguyên 100%, không bị đổi slug, index, phần mở rộng hoặc giá trị trong TSV.
+- Các record Choice/Fill tương ứng cùng từ và nghĩa đã được đối chiếu hai chiều và dùng chung một local filename hợp lệ; xung đột hai filename khác nhau đã được báo cáo, không tự ý đổi tên.
+- Nếu yêu cầu chỉ đồng bộ, không có thao tác Google Images, tìm kiếm nguồn, tải mới, chuyển đổi hoặc thay nội dung ảnh; các cặp chưa có ảnh được giữ nguyên và ghi nhận.
 - Với từ chưa có ảnh, đã kiểm tra các output khác để tái sử dụng theo đúng cả từ vựng và nghĩa trước khi tải ảnh mới.
 - Từ vựng trùng nhưng khác nghĩa chỉ dùng filename riêng có index khi record cần ảnh mới; không đổi filename local hợp lệ đã tồn tại.
 - Các cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng đã được để trống trường `image`, không tìm hoặc tải ảnh.
@@ -760,6 +777,9 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không thêm header vào file text mới nếu muốn nhất quán với các file hiện có.
 - Không xuất hoặc giữ file output ở dạng `.csv`; bắt buộc dùng file `.txt` với ký tự tab thực làm delimiter. Khi chuyển đổi file cũ, không được thay đổi nội dung field hoặc thứ tự cột.
 - Không tìm ảnh mới trước khi kiểm tra Remote URL và ảnh có sẵn trong các output khác.
+- Không chỉ đồng bộ ảnh từ Choice sang Fill hoặc từ Fill sang Choice; phải đối chiếu hai chiều theo cả từ và nghĩa.
+- Không tải mới hình ảnh khi người dùng chỉ yêu cầu đồng bộ; chế độ này chỉ đối chiếu và đồng bộ filename local hiện có.
+- Không coi hai record đã đồng bộ khi Choice và Fill còn hai local filename hợp lệ khác nhau; phải báo xung đột và không tự ý đổi tên filename.
 - Không tái sử dụng ảnh chỉ vì trùng cách viết từ vựng; phải trùng cả nghĩa.
 - Không áp dụng quy trình tìm hoặc tái sử dụng ảnh cho cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng; các trường hợp này phải để trống `image`.
 - Không dùng cùng một ảnh cho các nghĩa khác nhau của cùng từ nếu chưa có xác nhận ảnh minh hoạ chính xác; trường hợp record chưa có local filename thì tải ảnh mới và thêm index vào tên file nếu cần. Không được đổi tên local filename hợp lệ đã tồn tại.
