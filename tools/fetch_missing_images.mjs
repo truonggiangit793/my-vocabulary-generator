@@ -11,7 +11,7 @@ import path from 'node:path';
 import { parseImageToolOptions } from './image_tool_options.mjs';
 import { configuredSourceSummary, preferredCandidates } from './image_sources.mjs';
 
-const { root, outputDir, imageDir, reportPrefix } = parseImageToolOptions();
+const { root, outputDir, imageDir, reportPrefix } = parseImageToolOptions({ requireGoogleSearch: true });
 const openverseApi = 'https://api.openverse.org/v1/images';
 const concurrency = 3;
 const minLongEdge = 1_200;
@@ -48,12 +48,14 @@ async function lookupImage(word) {
   const preferredImage = preferred?.length ? select(preferred) : null;
   if (preferredImage) return preferredImage;
 
-  // Openverse/Flickr is used only when none of the configured preferred
-  // providers has a suitable result.
-  const query = new URLSearchParams({ q: word, page_size: '5', source: 'flickr' });
+  // Openverse is used only when none of the configured preferred providers
+  // has a suitable result. Querying all Openverse providers gives us access
+  // to original images from Wikimedia and other approved sources, rather
+  // than restricting the fallback to Flickr thumbnails or small derivatives.
+  const query = new URLSearchParams({ q: word, page_size: '20' });
   const data = await fetchJson(`${openverseApi}?${query}`);
   const candidates = (data.results ?? []).filter(item => item.url
-    && /^https:\/\/live\.staticflickr\.com\//.test(item.url)
+    && /^https?:\/\//.test(item.url)
     && Math.max(item.width ?? 0, item.height ?? 0) >= minLongEdge);
   // Prefer landscape images without requiring a fixed aspect ratio. Fall back
   // to another valid result when Openverse has no landscape candidate.

@@ -251,7 +251,11 @@ Khi tìm ảnh, ưu tiên nguồn theo thứ tự sau:
 5. `pixabay.com`
 6. Openverse / Flickr, chỉ dùng làm fallback cuối cùng khi các nguồn trên không có ảnh phù hợp.
 
-Sau khi đã xử lý Remote URL và kiểm tra khả năng tái sử dụng tên file Local từ các output khác, nếu cần tìm ảnh mới thì luôn tìm từ Google Search / Google Images trước vì kết quả đa dạng và có khả năng phù hợp với ngữ cảnh hơn. Phải lọc, xem trước và phân tích các hình ảnh tìm được từ Google Search để chọn ảnh minh hoạ chính xác cho nghĩa đang kiểm tra. Chỉ dùng các nguồn khác theo thứ tự trên khi Google Search không có ảnh phù hợp; dù lấy từ nguồn nào, vẫn phải kiểm tra trực quan ảnh theo các quy tắc bên dưới trước khi gắn vào TSV.
+Sau khi đã xử lý Remote URL và kiểm tra khả năng tái sử dụng tên file Local từ các output khác, nếu cần tìm ảnh mới thì Agent **bắt buộc phải thực hiện Google Search / Google Images trước** cho từng từ/cụm từ cần ảnh. Phải lọc, xem trước và phân tích các hình ảnh tìm được từ Google Search để chọn ảnh minh hoạ chính xác cho nghĩa đang kiểm tra.
+
+Nếu Agent không thể thực hiện Google Search / Google Images, bị mất quyền truy cập, hoặc công cụ tìm kiếm không khả dụng, Agent phải **dừng quy trình và hỏi người dùng** trước khi quyết định có sử dụng các script/nguồn ảnh fallback hay không. Không được tự động chuyển sang Unsplash, Pinterest, Pexels, Pixabay, Openverse hoặc Flickr trong tình huống này.
+
+Chỉ khi Google Search đã được thực hiện và không có ảnh phù hợp, hoặc ảnh gốc không tải được sau khi đã kiểm tra ứng viên, mới được dùng các nguồn khác theo thứ tự trên; dù lấy từ nguồn nào, vẫn phải kiểm tra trực quan ảnh theo các quy tắc bên dưới trước khi gắn vào TSV.
 
 #### Quy trình chọn ảnh
 
@@ -292,12 +296,19 @@ Sau khi đã xử lý Remote URL và kiểm tra khả năng tái sử dụng tê
 Các script trong `/tools` không gắn với một bộ đề cụ thể. Luôn truyền thư mục nhóm output cần xử lý:
 
 ```bash
-node tools/fetch_missing_images.mjs --output-dir output/<group> --image-dir images
-node tools/refresh_images_by_meaning.mjs --output-dir output/<group> --image-dir images
+node tools/fetch_missing_images.mjs --output-dir output/<group> --image-dir images --google-search-verified
+node tools/refresh_images_by_meaning.mjs --output-dir output/<group> --image-dir images --google-search-verified
 node tools/remove_nonillustrable_images.mjs --output-dir output/<group> --image-dir images --rules tools/image-filter-rules.example.json
 ```
 
-`refresh_images_by_meaning.mjs --retry` chỉ chạy lại các mục được ghi trong file lỗi của đúng group. `remove_nonillustrable_images.mjs --rules <file.json>` nhận một JSON gồm `types` và/hoặc `words`, vì vậy rule lọc ảnh có thể tuỳ chỉnh cho từng bộ từ vựng mà không sửa tool.
+Trước khi chạy hai script tải/thay ảnh, phải hoàn tất Google Search / Google Images và chỉ khi đã thực hiện mới thêm cờ bắt buộc `--google-search-verified`:
+
+```bash
+node tools/fetch_missing_images.mjs --output-dir output/<group> --image-dir images --google-search-verified
+node tools/refresh_images_by_meaning.mjs --output-dir output/<group> --image-dir images --google-search-verified
+```
+
+Nếu không thực hiện được Google Search, không thêm cờ này và phải hỏi người dùng trước. `refresh_images_by_meaning.mjs --retry` chỉ chạy lại các mục được ghi trong file lỗi của đúng group. `remove_nonillustrable_images.mjs --rules <file.json>` nhận một JSON gồm `types` và/hoặc `words`, vì vậy rule lọc ảnh có thể tuỳ chỉnh cho từng bộ từ vựng mà không sửa tool.
 
 - Các script trong `/tools` chỉ là công cụ hỗ trợ cho các nguồn ảnh dự phòng; kết quả tự động từ script không thay thế bước tìm kiếm, lọc và phân tích trực quan ảnh từ Google Search khi Google Search là nguồn được ưu tiên.
 

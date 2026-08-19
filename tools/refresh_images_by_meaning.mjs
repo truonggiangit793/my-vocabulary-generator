@@ -11,7 +11,7 @@ import path from 'node:path';
 import { parseImageToolOptions } from './image_tool_options.mjs';
 import { configuredSourceSummary, preferredCandidates } from './image_sources.mjs';
 
-const { root, outputDir, imageDir, retry, reportPrefix } = parseImageToolOptions({ allowRetry: true });
+const { root, outputDir, imageDir, retry, reportPrefix } = parseImageToolOptions({ allowRetry: true, requireGoogleSearch: true });
 const api = 'https://api.openverse.org/v1/images';
 const concurrency = 1;
 const apiRequestIntervalMs = 1_100;
