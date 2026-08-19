@@ -1,10 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const root = '/Users/truonggiangit793/Desktop/my-vocabulary-generator';
-const inputPath = path.join(root, 'input/vietnamese-foods-vegetables/foods.txt');
+const inputArg = process.argv[2] || 'input/vietnamese-foods-vegetables/foods.txt';
+const inputPath = path.resolve(root, inputArg);
 const outDir = path.join(root, 'output/vietnamese-foods-vegetables');
-const idStem = 'VIE-FOODS';
+const idStem = process.argv[3] || 'VIE-FOODS';
+const outputStem = process.argv[4] || path.basename(inputPath, path.extname(inputPath));
+const isVegetableList = idStem === 'VIE-VEGETABLES';
 
 const ipa = {
   beef: ['/biːf/', '/biːf/'], pho: ['/fɜː/', '/fɑː/'], chicken: ['/ˈtʃɪk.ɪn/', '/ˈtʃɪk.ən/'],
@@ -138,13 +142,18 @@ const specificDefinitions = {
 };
 
 function finalDefinition(word) {
-  const d = specificDefinitions[word] || definition(word);
+  const d = isVegetableList ? vegetableDefinition(word) : (specificDefinitions[word] || definition(word));
   return d.toLowerCase().includes(word.toLowerCase())
-    ? 'A traditional Vietnamese specialty from the country’s regional cuisine.'
+    ? (isVegetableList ? 'An edible plant used in Vietnamese cooking.' : 'A traditional Vietnamese specialty from the country’s regional cuisine.')
     : d;
 }
 
 function ipaFor(word, accent) {
+  if (isVegetableList) {
+    const voice = accent === 0 ? 'en-gb' : 'en-us';
+    const spoken = spawnSync('espeak', ['--ipa', '-q', '-v', voice, word], { encoding: 'utf8' }).stdout.trim();
+    if (spoken) return `/${spoken.replace(/\s+/g, ' ')}/`;
+  }
   const tokens = word.toLowerCase().split(/\s+/).map(t => t.replace(/[(),]/g, ''));
   const parts = tokens.map(t => (ipa[t]?.[accent] || `ˈ${t.replace(/-/g, ' ')}`)
     .replace(/^\//, '').replace(/\/$/, ''));
@@ -162,9 +171,34 @@ const rows = raw.split(/\r?\n/).map(line => line.trim()).filter(Boolean).map(lin
 const seen = new Set();
 const items = rows.filter(x => !seen.has(x.word) && seen.add(x.word));
 
-function example(word) { return `I ordered ${word} at a Vietnamese restaurant because I wanted to try something new.`; }
-function exampleVie(meaning) { return `Tôi đã gọi món ${meaning.toLowerCase()} tại một nhà hàng Việt Nam vì muốn thử món mới.`; }
-function viet(meaning) { return `Món ${meaning}.`; }
+const leafyWords = /(?:leaves?|greens?|spinach|watercress|lettuce|fern|chives|celery|dill|pennywort|purslane|moringa|mustard|bok choy|cabbage|kale|choy sum|amaranth|katuk|malabar|jute|crown daisy|perilla|coriander|culantro|mint|basil|oregano|herb|water spinach|pepper elder|water mimosa|ramie|lotus leaves|betel|lolot)/i;
+const rootWords = /(?:root|taro|radish|carrot|beetroot|kohlrabi|jicama|potato|cassava|yam|water caltrop|ginger|turmeric|galangal|lemongrass|shallot|garlic|onion|chestnut|lotus root|bamboo shoots)/i;
+const fruitWords = /(?:banana|papaya|jackfruit|mango|pomelo|orange|mandarin|lime|kumquat|watermelon|pineapple|dragon fruit|durian|mangosteen|rambutan|longan|lychee|star apple|guava|rose apple|sapodilla|sugar apple|soursop|avocado|passion fruit|tamarind|starfruit|ambarella|jujube|fig|pomegranate|grape|strawberry|mulberry|canistel|langsat|breadfruit|cashew apple|gac fruit|toddy palm fruit|plum|peach|persimmon|apricot|honeydew|cantaloupe|cocoa fruit|citron|tomato|cucumber|chayote|eggplant|pumpkin|okra|bean|peas|pepper|corn|asparagus|zucchini|bitter melon|sponge gourd|ridge gourd|winter melon|bottle gourd|coconut)/i;
+const mushroomWords = /mushroom/i;
+const flowerWords = /flowers?|blossom/i;
+
+function vegetableDefinition(word) {
+  if (mushroomWords.test(word)) return 'An edible mushroom commonly used in Vietnamese soups and stir-fries.';
+  if (flowerWords.test(word)) return 'An edible flower or blossom used as a vegetable in Vietnamese cooking.';
+  if (rootWords.test(word)) return 'An edible root, tuber, or aromatic underground part used in Vietnamese cooking.';
+  if (fruitWords.test(word)) return 'An edible fruit or fruiting vegetable commonly used in Vietnamese dishes.';
+  if (leafyWords.test(word)) return 'A leafy vegetable or herb used fresh or cooked in Vietnamese dishes.';
+  if (/bean|peas|sprouts|legume/i.test(word)) return 'An edible legume or sprout used in Vietnamese cooking.';
+  if (/stem|shoot/i.test(word)) return 'An edible plant stem or shoot used in Vietnamese cooking.';
+  return 'An edible plant commonly used as a vegetable in Vietnamese cooking.';
+}
+
+function example(word) {
+  return isVegetableList
+    ? `I added ${word} to a Vietnamese meal for extra flavour.`
+    : `I ordered ${word} at a Vietnamese restaurant because I wanted to try something new.`;
+}
+function exampleVie(meaning) {
+  return isVegetableList
+    ? `Tôi đã thêm ${meaning.toLowerCase()} vào một món ăn Việt Nam để món ăn đậm đà hơn.`
+    : `Tôi đã gọi món ${meaning.toLowerCase()} tại một nhà hàng Việt Nam vì muốn thử món mới.`;
+}
+function viet(meaning) { return isVegetableList ? `${meaning}.` : `Món ${meaning}.`; }
 
 const choice = [];
 const fill = [];
@@ -177,13 +211,16 @@ for (let i = 0; i < items.length; i++) {
   const pos = i % 4;
   options.splice(pos, 0, item.word);
   const answerLetter = 'abcd'[pos];
-  const common = [item.word, 'phrase', ipaFor(item.word, 0), ipaFor(item.word, 1), 'B2', def, viet(item.meaning), '', ex, exVie, '', ''];
+  const common = [item.word, isVegetableList ? 'noun' : 'phrase', ipaFor(item.word, 0), ipaFor(item.word, 1), isVegetableList ? 'B1' : 'B2', def, viet(item.meaning), '', ex, exVie, '', ''];
   choice.push([`${i + 1}-${idStem}`, def, ...options, answerLetter, ...common].map(safe).join('\t'));
   const blank = item.word.split(/\s+/).map(() => '__').join(' ');
-  fill.push([`${items.length + i + 1}-${idStem}`, `I ordered ${blank} at a Vietnamese restaurant because I wanted to try something new.`, item.word, 'phrase', ipaFor(item.word, 0), ipaFor(item.word, 1), 'B2', def, viet(item.meaning), '', ex, exVie, '', ''].map(safe).join('\t'));
+  const fillQuestion = isVegetableList
+    ? `I added ${blank} to a Vietnamese meal for extra flavour.`
+    : `I ordered ${blank} at a Vietnamese restaurant because I wanted to try something new.`;
+  fill.push([`${items.length + i + 1}-${idStem}`, fillQuestion, item.word, isVegetableList ? 'noun' : 'phrase', ipaFor(item.word, 0), ipaFor(item.word, 1), isVegetableList ? 'B1' : 'B2', def, viet(item.meaning), '', ex, exVie, '', ''].map(safe).join('\t'));
 }
 
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(path.join(outDir, 'CHOICE-foods.txt'), choice.join('\n') + '\n', 'utf8');
-fs.writeFileSync(path.join(outDir, 'FILL-foods.txt'), fill.join('\n') + '\n', 'utf8');
-console.log(`Generated ${choice.length} choice rows and ${fill.length} fill rows.`);
+fs.writeFileSync(path.join(outDir, `CHOICE-${outputStem}.txt`), choice.join('\n') + '\n', 'utf8');
+fs.writeFileSync(path.join(outDir, `FILL-${outputStem}.txt`), fill.join('\n') + '\n', 'utf8');
+console.log(`Generated ${choice.length} choice rows and ${fill.length} fill rows for ${outputStem} (${idStem}).`);
