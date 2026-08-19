@@ -237,7 +237,7 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 - Nếu hai bên đang có hai local filename hợp lệ khác nhau, không được tự ý đổi tên, ghi đè tham chiếu hoặc xoá filename nào. Giữ nguyên cả hai, ghi nhận xung đột để xử lý thủ công; chỉ kết luận đồng bộ hoàn tất sau khi xung đột được giải quyết mà vẫn không đổi tên các filename đã tồn tại.
 - Không đồng bộ chỉ vì cùng spelling khi `definition` hoặc ngữ cảnh khác nhau; các nghĩa khác nhau phải được đối chiếu riêng.
 
-### 4.1.1 Quy trình hình ảnh khi tạo mới hoặc cập nhật output
+### 4.1.1 Quy trình Google Search khi tạo mới hoặc cập nhật output
 
 Áp dụng quy trình này khi người dùng yêu cầu tạo dữ liệu output mới hoặc cập nhật hình ảnh cho output đã có. Với output mới, thực hiện quy trình từ đầu cho từng record; với output đã có, bắt đầu bằng việc kiểm tra giá trị hiện tại trong cột `image`:
 
@@ -245,32 +245,23 @@ Nếu từ không có CEFR chính thức, Agent tự gán theo độ khó tươn
 
 Trước khi xử lý từng record, xác định record đó có thể minh hoạ ổn định theo mục Quy trình chọn ảnh hay không. Với cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng, để trống `image` và bỏ qua toàn bộ bước Remote URL, tái sử dụng ảnh và tìm ảnh mới.
 
-Các bước tìm kiếm/tải ảnh bên dưới chỉ áp dụng khi người dùng yêu cầu tạo mới hoặc cập nhật ảnh. Nếu yêu cầu chỉ là đồng bộ, chỉ chạy `sync_image_references.mjs` và dừng sau bước đối chiếu local filename.
+Toàn bộ quy trình tìm, xem trước, chọn và lưu ảnh phải thực hiện thủ công bằng Google Search/Google Images trong Browser. Không dùng script tải ảnh, API nguồn ảnh, nguồn fallback tự động hoặc tool tự động thay ảnh. Nếu yêu cầu chỉ là đồng bộ, chỉ đối chiếu local filename giữa Choice và Fill rồi dừng.
 
-1. Kiểm tra tuần tự các record và cột `image` từ trên xuống dưới. Nếu cột `image` đang chứa Remote URL hợp lệ (`http://` hoặc `https://`), tải ảnh trực tiếp từ liên kết đó về `/images`, chuyển/chuẩn hoá thành JPEG `.jpg`, đặt tên file theo quy định và thay Remote URL trong output bằng tên file cục bộ. Nếu cột `image` đã chứa local filename hợp lệ, giữ nguyên filename đó trong mọi trường hợp.
+1. Kiểm tra tuần tự các record và cột `image` từ trên xuống dưới. Nếu cột `image` đã chứa local filename hợp lệ, giữ nguyên filename đó trong mọi trường hợp. Nếu cột `image` chứa Remote URL hoặc giá trị không hợp lệ, không dùng tool tự động để chuyển đổi; phải kiểm tra lại nghĩa bằng Google Images, mở trang nguồn/ảnh gốc và xử lý thủ công trước khi cập nhật.
 2. Trước khi tìm ảnh mới, đối chiếu record Choice và Fill tương ứng theo cùng từ/cụm từ và nghĩa. Nếu một bên có local filename hợp lệ còn bên kia chưa có filename hợp lệ, đồng bộ bằng cách copy chính xác filename hiện có sang bên kia. Không đổi filename đã tồn tại.
 3. Nếu từ vựng chưa có hình ảnh ở cả hai dạng, chỉ kiểm tra các file output khác để tìm tên file ảnh dạng Local trước khi tìm ảnh mới. Chỉ tái sử dụng ảnh khi đồng thời trùng **từ vựng** và **nghĩa** (đối chiếu cả `definition`, và khi cần cả `vietnamese`/ngữ cảnh); không cần kiểm tra file vật lý tương ứng trong `/images` vì đây chỉ là thư mục tạm.
-4. Nếu không có record trùng cả từ và nghĩa, hoặc cả Choice và Fill tương ứng đều chưa có tên file ảnh dạng Local, khi đang tạo mới/cập nhật ảnh thì tìm và tải một ảnh mới rồi gắn cùng filename cho cả hai dạng. Trong yêu cầu chỉ đồng bộ, giữ nguyên trạng thái hiện tại và không tải ảnh.
-5. Nếu trùng từ vựng nhưng khác nghĩa, không được dùng lại ảnh cũ cho record chưa có filename. Phải tải ảnh mới phù hợp với nghĩa mới và chỉ gắn index tuần tự khi tạo filename mới cho record đó. Nếu record đã có local filename hợp lệ, giữ nguyên filename hiện có; không đổi sang filename có index khác.
-6. Khi xử lý một từ vựng, phải thực hiện lần lượt: xem nghĩa của từ; đồng bộ ảnh hợp lệ giữa Choice và Fill; kiểm tra các output khác để tái sử dụng ảnh đúng từ + đúng nghĩa; nếu không có thì xem `definition` và ngữ cảnh để tìm ảnh mới trên Internet; xem trước và phân tích kỹ ảnh để xác nhận chủ thể, hành động hoặc bối cảnh trong ảnh phù hợp với nghĩa đang kiểm tra; cuối cùng mới tải, lưu và cập nhật output.
-7. Ảnh tải về bắt buộc là JPEG có đuôi `.jpg`, ưu tiên khung hình chiều ngang và có tỷ lệ tương đối thuộc một trong các tỷ lệ `3:4`, `3:2` hoặc `16:9`. Không gắn ảnh chỉ dựa trên tiêu đề, tag hoặc URL nếu chưa kiểm tra trực quan và đối chiếu nghĩa.
+4. Nếu không có record trùng cả từ và nghĩa, hoặc cả Choice và Fill tương ứng đều chưa có tên file ảnh dạng Local, mở Google Search/Google Images với truy vấn có từ, `definition`, part of speech và ngữ cảnh; chọn một ảnh gốc phù hợp rồi lưu thủ công và gắn cùng filename cho cả hai dạng. Trong yêu cầu chỉ đồng bộ, giữ nguyên trạng thái hiện tại và không tìm/tải ảnh.
+5. Nếu trùng từ vựng nhưng khác nghĩa, không được dùng lại ảnh cũ cho record chưa có filename. Phải chọn ảnh Google khác phù hợp với nghĩa mới và chỉ gắn index tuần tự khi tạo filename mới cho record đó. Nếu record đã có local filename hợp lệ, giữ nguyên filename hiện có; không đổi sang filename có index khác.
+6. Khi xử lý một từ vựng, phải thực hiện lần lượt: xem nghĩa; đối chiếu ảnh hợp lệ giữa Choice và Fill; kiểm tra output khác để tái sử dụng ảnh đúng từ + đúng nghĩa; nếu không có thì tìm trên Google Images; xem trước và phân tích kỹ ảnh; mở trang nguồn hoặc ảnh gốc; sau đó mới lưu thủ công và cập nhật output.
+7. Ảnh lưu thủ công bắt buộc là JPEG có đuôi `.jpg`, ưu tiên khung hình chiều ngang và có tỷ lệ tương đối thuộc một trong các tỷ lệ `3:4`, `3:2` hoặc `16:9`. Không gắn ảnh chỉ dựa trên tiêu đề, tag hoặc URL nếu chưa kiểm tra trực quan và đối chiếu nghĩa.
 
-#### Nguồn ảnh ưu tiên
+#### Nguồn và phương thức ảnh
 
-Khi tìm ảnh, ưu tiên nguồn theo thứ tự sau:
+Google Search/Google Images là nguồn và phương thức duy nhất cho toàn bộ quy trình liên quan tới ảnh. Không dùng Unsplash, Pinterest, Pexels, Pixabay, Openverse, Flickr, API nguồn ảnh hoặc script tải/thay ảnh tự động.
 
-1. Google Search / Google Images.
-2. `unsplash.com`
-3. `pinterest.com`
-4. `pexels.com`
-5. `pixabay.com`
-6. Openverse / Flickr, chỉ dùng làm fallback cuối cùng khi các nguồn trên không có ảnh phù hợp.
+Nếu Google Search/Google Images không khả dụng, Agent phải dừng quy trình ảnh và hỏi người dùng; không tự động chuyển sang nguồn hoặc tool khác.
 
-Sau khi đã xử lý Remote URL và kiểm tra khả năng tái sử dụng tên file Local từ các output khác, nếu cần tìm ảnh mới thì Agent **bắt buộc phải thực hiện Google Search / Google Images trước** cho từng từ/cụm từ cần ảnh. Phải lọc, xem trước và phân tích các hình ảnh tìm được từ Google Search để chọn ảnh minh hoạ chính xác cho nghĩa đang kiểm tra.
-
-Nếu Agent không thể thực hiện Google Search / Google Images, bị mất quyền truy cập, hoặc công cụ tìm kiếm không khả dụng, Agent phải **dừng quy trình và hỏi người dùng** trước khi quyết định có sử dụng các script/nguồn ảnh fallback hay không. Không được tự động chuyển sang Unsplash, Pinterest, Pexels, Pixabay, Openverse hoặc Flickr trong tình huống này.
-
-Chỉ khi Google Search đã được thực hiện và không có ảnh phù hợp, hoặc ảnh gốc không tải được sau khi đã kiểm tra ứng viên, mới được dùng các nguồn khác theo thứ tự trên; dù lấy từ nguồn nào, vẫn phải kiểm tra trực quan ảnh theo các quy tắc bên dưới trước khi gắn vào TSV.
+Sau khi kiểm tra khả năng tái sử dụng tên file Local từ các output khác, nếu cần tìm ảnh mới thì Agent **bắt buộc phải thực hiện Google Search / Google Images** cho từng từ/cụm từ cần ảnh. Phải lọc, xem trước, mở trang nguồn và phân tích ảnh được chọn trước khi lưu thủ công và gắn vào TSV.
 
 #### Quy trình chọn ảnh
 
@@ -280,15 +271,15 @@ Chỉ khi Google Search đã được thực hiện và không có ảnh phù h�
 4. Không dùng ảnh cho trạng từ, giới từ, cấu trúc ngữ pháp, thành ngữ mang ý nghĩa trừu tượng, quan hệ trừu tượng, khái niệm đánh giá hoặc cụm từ dài khoảng 3 từ trở lên mang ý nghĩa trừu tượng. Để trống trường ảnh trong các trường hợp này. Với từ/cụm từ đa nghĩa mà không có một minh hoạ ổn định, cũng để trống trường ảnh.
 5. Với kết quả từ Google Search, lọc các ảnh theo nghĩa, `definition`, part of speech và ngữ cảnh; xem trước và phân tích kỹ từng ứng viên phù hợp trước khi chọn ảnh. Không chấp nhận ảnh chỉ liên quan lỏng lẻo qua tiêu đề, tag, hoặc một nghĩa khác của từ.
 
-#### Yêu cầu chất lượng và tải ảnh gốc
+#### Yêu cầu chất lượng và lưu ảnh gốc thủ công
 
 - Không được dùng ảnh thumbnail/ảnh xem trước của Google làm file ảnh cuối cùng. Các URL dạng `encrypted-tbn0.gstatic.com`, URL thumbnail, ảnh bị thu nhỏ trong trang kết quả hoặc ảnh chỉ có kích thước vài trăm pixel chỉ dùng để xem và đánh giá, không được tải trực tiếp vào `/images`.
-- Sau khi chọn ứng viên trên Google Images, phải mở trang nguồn hoặc truy cập URL ảnh gốc để tải phiên bản có độ phân giải cao hơn. Nếu không lấy được ảnh gốc, bỏ qua ứng viên đó và chọn ứng viên khác; không phóng to thumbnail bằng nội suy để giả lập ảnh chất lượng cao.
+- Sau khi chọn ứng viên trên Google Images, phải mở trang nguồn hoặc truy cập URL ảnh gốc để lưu thủ công phiên bản có độ phân giải cao hơn. Nếu không lấy được ảnh gốc, bỏ qua ứng viên đó và chọn ứng viên khác; không phóng to thumbnail bằng nội suy để giả lập ảnh chất lượng cao.
 - Ảnh mới tải phải có cạnh dài tối thiểu khoảng `1200 px`; ưu tiên ảnh có chiều ngang từ `1600 px` trở lên và đủ chi tiết để nhìn rõ chủ thể khi hiển thị trên Anki. Ảnh dưới ngưỡng này chỉ được dùng khi không tồn tại ảnh phù hợp hơn và Agent phải ghi nhận ngoại lệ trong báo cáo.
 - Sau khi tải, phải kiểm tra kích thước pixel thực tế, định dạng JPEG, độ rõ của chủ thể và tỷ lệ khung hình so với một trong các tỷ lệ `3:4`, `3:2` hoặc `16:9`.
 - Không được tự ý crop/cắt, resize, kéo giãn, thêm padding hoặc thay đổi bố cục ảnh. Phải giữ nguyên ảnh gốc được tải về, bao gồm nội dung, bố cục và kích thước pixel; chỉ được chuyển đổi định dạng sang `.jpg` khi cần để đáp ứng yêu cầu JPEG.
 - Nếu ảnh gốc không có tỷ lệ tương đối phù hợp, phải bỏ qua ảnh đó và chọn ứng viên khác; không được chỉnh sửa ảnh để ép về tỷ lệ yêu cầu.
-- Khi người dùng yêu cầu nâng chất lượng ảnh, chỉ tải lại các ảnh có nguồn Google Search/Google Images được xác định trong lần xử lý hiện tại; không tải lại các ảnh Local đã được chuyển đổi từ Remote URL cũ nếu người dùng không yêu cầu.
+- Khi người dùng yêu cầu nâng chất lượng ảnh, chỉ xử lý lại các ứng viên Google Search/Google Images được xác định trong lần xử lý hiện tại; không thay đổi các local filename hợp lệ đã có nếu người dùng không yêu cầu.
 
 #### Yêu cầu tệp ảnh
 
@@ -307,28 +298,11 @@ Chỉ khi Google Search đã được thực hiện và không có ảnh phù h�
 - Khi chỉ cập nhật hình ảnh cho output đã có, Choice vẫn có 19 cột và Fill vẫn có 14 cột; chỉ trường `image` được phép thay đổi. Quy tắc này không hạn chế việc tạo đầy đủ các field khi tạo output mới.
 - Rà ngẫu nhiên và rà bắt buộc mọi từ đa nghĩa/rủi ro cao (ví dụ homonym, polysemy, idiom) bằng definition trước khi hoàn tất.
 
-#### Tools hình ảnh dùng lại được
+#### Tool hình ảnh
 
-Các script trong `/tools` không gắn với một bộ đề cụ thể. Luôn truyền thư mục nhóm output cần xử lý:
+Dự án không còn bộ tool tải, thay, lọc hoặc lấy nguồn ảnh tự động. Toàn bộ việc tìm kiếm, xem trước, tải ảnh gốc, chuyển JPEG và cập nhật TSV phải thực hiện thủ công bằng Google Search/Google Images trong Browser.
 
-```bash
-node tools/sync_image_references.mjs --output-dir output/<group>
-node tools/fetch_missing_images.mjs --output-dir output/<group> --image-dir images --google-search-verified
-node tools/refresh_images_by_meaning.mjs --output-dir output/<group> --image-dir images --google-search-verified
-node tools/remove_nonillustrable_images.mjs --output-dir output/<group> --image-dir images --rules tools/image-filter-rules.example.json
-```
-
-Trước khi chạy hai script tải/thay ảnh, phải hoàn tất Google Search / Google Images và chỉ khi đã thực hiện mới thêm cờ bắt buộc `--google-search-verified`:
-
-```bash
-node tools/fetch_missing_images.mjs --output-dir output/<group> --image-dir images --google-search-verified
-node tools/refresh_images_by_meaning.mjs --output-dir output/<group> --image-dir images --google-search-verified
-```
-
-Nếu không thực hiện được Google Search, không thêm cờ này và phải hỏi người dùng trước. `refresh_images_by_meaning.mjs --retry` chỉ chạy lại các mục được ghi trong file lỗi của đúng group. `remove_nonillustrable_images.mjs --rules <file.json>` nhận một JSON gồm `types` và/hoặc `words`, vì vậy rule lọc ảnh có thể tuỳ chỉnh cho từng bộ từ vựng mà không sửa tool.
-
-- Các script trong `/tools` chỉ là công cụ hỗ trợ cho các nguồn ảnh dự phòng; kết quả tự động từ script không thay thế bước tìm kiếm, lọc và phân tích trực quan ảnh từ Google Search khi Google Search là nguồn được ưu tiên.
-- `sync_image_references.mjs` là bước đồng bộ local filename giữa Choice và Fill; chạy trước bước tìm/tải ảnh mới. Tool chỉ copy filename hợp lệ còn thiếu, không đổi tên filename đã tồn tại và phải báo các cặp có hai filename hợp lệ khác nhau.
+`sync_image_references.mjs` là ngoại lệ chỉ dành cho yêu cầu đồng bộ local filename giữa Choice và Fill. Tool này không tìm, tải, đổi tên hoặc thay nội dung ảnh.
 
 ---
 
@@ -480,7 +454,7 @@ Quy tắc:
 
 ### 5.12 `image`
 
-Tên file ảnh dạng Local trong thư mục tạm `/images`; Remote URL chỉ được phép tồn tại tạm thời trước khi tải ảnh về và thay bằng tên file `.jpg`. Khi đối chiếu output khác, chỉ cần kiểm tra tên file dạng Local, không cần kiểm tra file vật lý trong `/images`.
+Tên file ảnh dạng Local trong thư mục tạm `/images`; Remote URL không được giữ lại trong output sau khi xử lý thủ công bằng Google Search và phải được thay bằng tên file `.jpg`. Khi đối chiếu output khác, chỉ cần kiểm tra tên file dạng Local, không cần kiểm tra file vật lý trong `/images`.
 
 Quy tắc:
 
@@ -642,7 +616,7 @@ Quy tắc:
 
 ### 6.10 `image`
 
-Tên file ảnh dạng Local trong thư mục tạm `/images`; Remote URL chỉ được phép tồn tại tạm thời trước khi tải ảnh về và thay bằng tên file `.jpg`. Khi đối chiếu output khác, chỉ cần kiểm tra tên file dạng Local, không cần kiểm tra file vật lý trong `/images`.
+Tên file ảnh dạng Local trong thư mục tạm `/images`; Remote URL không được giữ lại trong output sau khi xử lý thủ công bằng Google Search và phải được thay bằng tên file `.jpg`. Khi đối chiếu output khác, chỉ cần kiểm tra tên file dạng Local, không cần kiểm tra file vật lý trong `/images`.
 
 Quy tắc:
 
@@ -742,7 +716,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Số thứ tự tăng dần và không trùng.
 - Khi tạo output mới, Fill The Blank tiếp tục số thứ tự sau Choice Question; khi bổ sung vào danh sách đã có, số mới tiếp tục sau record Fill The Blank cuối cùng.
 - Khi tạo output mới hoặc cập nhật hình ảnh, các record đã được kiểm tra tuần tự từ trên xuống dưới.
-- Remote URL trong cột `image` đã được tải trực tiếp, chuyển thành JPEG `.jpg` và thay bằng tên file cục bộ.
+- Remote URL trong cột `image` đã được kiểm tra thủ công bằng Google Search/Google Images, lưu từ ảnh gốc, chuyển thành JPEG `.jpg` và thay bằng tên file cục bộ.
 - Mọi local filename hợp lệ đã có trước khi cập nhật hoặc đồng bộ hình ảnh vẫn giữ nguyên 100%, không bị đổi slug, index, phần mở rộng hoặc giá trị trong TSV.
 - Các record Choice/Fill tương ứng cùng từ và nghĩa đã được đối chiếu hai chiều và dùng chung một local filename hợp lệ; xung đột hai filename khác nhau đã được báo cáo, không tự ý đổi tên.
 - Nếu yêu cầu chỉ đồng bộ, không có thao tác Google Images, tìm kiếm nguồn, tải mới, chuyển đổi hoặc thay nội dung ảnh; các cặp chưa có ảnh được giữ nguyên và ghi nhận.
@@ -750,7 +724,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Từ vựng trùng nhưng khác nghĩa chỉ dùng filename riêng có index khi record cần ảnh mới; không đổi filename local hợp lệ đã tồn tại.
 - Các cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng đã được để trống trường `image`, không tìm hoặc tải ảnh.
 - Mọi giá trị `image` được gắn vào output là tên file Local có đuôi `.jpg`, đã được xem trước khi tải mới hoặc đã được xác nhận từ record ảnh được tái sử dụng, và có tỷ lệ tương đối `3:4`, `3:2` hoặc `16:9`; không yêu cầu file đó phải còn tồn tại trong `/images`.
-- Mọi ảnh mới tải từ Google đã được lấy từ ảnh gốc thay vì thumbnail, có cạnh dài tối thiểu khoảng `1200 px` hoặc có ngoại lệ được ghi nhận, giữ nguyên nội dung/bố cục/kích thước pixel gốc và không bị mờ/vỡ sau khi chuyển sang JPEG.
+- Mọi ảnh mới lưu thủ công từ Google đã được lấy từ ảnh gốc thay vì thumbnail, có cạnh dài tối thiểu khoảng `1200 px` hoặc có ngoại lệ được ghi nhận, giữ nguyên nội dung/bố cục/kích thước pixel gốc và không bị mờ/vỡ sau khi chuyển sang JPEG.
 - Trước khi tạo output, danh từ số nhiều có quy tắc và động từ quá khứ có quy tắc đã được chuyển về dạng nguyên mẫu trong file input tương ứng.
 - Trước khi tạo output, danh từ số nhiều bất quy tắc và động từ bất quy tắc đã được bổ sung từ gốc vào file input tương ứng.
 - Definition của các từ gốc được bổ sung từ dạng bất quy tắc phải giải thích rõ quan hệ với dạng biến đổi ban đầu.
@@ -783,7 +757,7 @@ Trước khi kết thúc, Agent phải kiểm tra:
 - Không tái sử dụng ảnh chỉ vì trùng cách viết từ vựng; phải trùng cả nghĩa.
 - Không áp dụng quy trình tìm hoặc tái sử dụng ảnh cho cụm từ dài khoảng 3 từ trở lên hoặc thành ngữ mang ý nghĩa trừu tượng; các trường hợp này phải để trống `image`.
 - Không dùng cùng một ảnh cho các nghĩa khác nhau của cùng từ nếu chưa có xác nhận ảnh minh hoạ chính xác; trường hợp record chưa có local filename thì tải ảnh mới và thêm index vào tên file nếu cần. Không được đổi tên local filename hợp lệ đã tồn tại.
-- Không gắn Remote URL trực tiếp vào output sau khi tạo hoặc cập nhật; phải tải về, kiểm tra trực quan, chuẩn hoá thành `.jpg` và dùng tên file cục bộ.
+- Không gắn Remote URL trực tiếp vào output sau khi tạo hoặc cập nhật; phải mở Google Images, kiểm tra trực quan ảnh gốc, lưu thủ công, chuẩn hoá thành `.jpg` và dùng tên file cục bộ.
 - Không dùng ảnh chưa xem trước, sai ngữ cảnh, không phải JPEG `.jpg`, hoặc không gần một trong các tỷ lệ `3:4`, `3:2`, `16:9`.
 - Không tự ý crop/cắt, resize, kéo giãn, thêm padding hoặc thay đổi bố cục ảnh; nếu ảnh gốc không gần tỷ lệ yêu cầu thì phải chọn ảnh khác.
 - Không lưu thumbnail Google, URL `encrypted-tbn0.gstatic.com`, ảnh preview vài trăm pixel, hoặc ảnh bị phóng to từ thumbnail làm ảnh cuối cùng; phải lấy ảnh gốc/độ phân giải cao và kiểm tra kích thước pixel trước khi cập nhật output.
