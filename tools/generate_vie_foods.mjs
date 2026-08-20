@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { vegetableDefinition as detailedVegetableDefinition } from './vie_vegetable_definitions.mjs';
 
 const root = '/Users/truonggiangit793/Desktop/my-vocabulary-generator';
 const inputArg = process.argv[2] || 'input/vietnamese-foods-vegetables/foods.txt';
@@ -178,14 +179,7 @@ const mushroomWords = /mushroom/i;
 const flowerWords = /flowers?|blossom/i;
 
 function vegetableDefinition(word) {
-  if (mushroomWords.test(word)) return 'An edible mushroom commonly used in Vietnamese soups and stir-fries.';
-  if (flowerWords.test(word)) return 'An edible flower or blossom used as a vegetable in Vietnamese cooking.';
-  if (rootWords.test(word)) return 'An edible root, tuber, or aromatic underground part used in Vietnamese cooking.';
-  if (fruitWords.test(word)) return 'An edible fruit or fruiting vegetable commonly used in Vietnamese dishes.';
-  if (leafyWords.test(word)) return 'A leafy vegetable or herb used fresh or cooked in Vietnamese dishes.';
-  if (/bean|peas|sprouts|legume/i.test(word)) return 'An edible legume or sprout used in Vietnamese cooking.';
-  if (/stem|shoot/i.test(word)) return 'An edible plant stem or shoot used in Vietnamese cooking.';
-  return 'An edible plant commonly used as a vegetable in Vietnamese cooking.';
+  return detailedVegetableDefinition(word);
 }
 
 function example(word) {
