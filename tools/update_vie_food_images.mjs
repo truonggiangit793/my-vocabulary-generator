@@ -3,11 +3,11 @@ import path from 'node:path';
 
 const root = '/Users/truonggiangit793/Desktop/my-vocabulary-generator';
 const dir = path.join(root, 'output/vietnamese-foods-vegetables');
-const [word, filename] = process.argv.slice(2);
-if (!word || !filename) throw new Error('Usage: node tools/update_vie_food_images.mjs "word" "filename.jpg"');
+const [word, filename, outputStem = 'foods'] = process.argv.slice(2);
+if (!word || !filename) throw new Error('Usage: node tools/update_vie_food_images.mjs "word" "filename.jpg" [output-stem]');
 
-const choicePath = path.join(dir, 'CHOICE-foods.txt');
-const fillPath = path.join(dir, 'FILL-foods.txt');
+const choicePath = path.join(dir, `CHOICE-${outputStem}.txt`);
+const fillPath = path.join(dir, `FILL-${outputStem}.txt`);
 
 function update(file, index) {
   const rows = fs.readFileSync(file, 'utf8').split(/\r?\n/).filter(Boolean);
